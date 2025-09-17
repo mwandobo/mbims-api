@@ -1,0 +1,307 @@
+###
+POST {{base_url}}auth/login
+Content-Type: application/json
+
+{
+    "email": "admin@gmail.com",
+    "password": "123456"
+}
+
+> {%
+  // client.global.set("token", response.body.data.token);
+  client.global.set("token", response.body.access_token);
+
+%}
+
+###
+GET {{base_url}}users
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "admin",
+  "middleName": "adminwer",
+  "lastName": "admin2@gmail.com",
+  "email": "breezojrr@gmail.com",
+  "phone": "123456",
+  "role_id": "1bbd5acf-e0c0-4421-96eb-9d9400284cf7",
+  "department_id": "ea705789-e3e3-46ba-921e-45f52460b5cb",
+  "dateOfBirth": "12-04-1994"
+}
+
+###
+PATCH {{base_url}}/users/a973be6c-c24a-4d13-93ec-e13fc84ef99c
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "adminqqq",
+  "middleName": "admin",
+  "lastName": "admin@gmail.com",
+  "email": "breezojr@gmail.com",
+  "phone": "123456",
+  "role_id": "1bbd5acf-e0c0-4421-96eb-9d9400284cf7",
+  "department_id": "ea705789-e3e3-46ba-921e-45f52460b5cb",
+  "dateOfBirth": "12-04-1994"
+}
+
+###
+GET {{base_url}}users?q=admin
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}roles/b6dd6cfd-e9d3-4e58-bc4e-f6ad01ddf5cc
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}roles/permissions/b6dd6cfd-e9d3-4e58-bc4e-f6ad01ddf5cc
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}roles/assign/b6dd6cfd-e9d3-4e58-bc4e-f6ad01ddf5cc
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "permissions": [
+  "f76e3c35-166d-406f-a371-cbd9db41cfcc"
+  ]
+}
+
+###
+GET {{base_url}}roles/b6dd6cfd-e9d3-4e58-bc4e-f6ad01ddf5cc/permissions
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}contracts/8ba000f8-5d92-47ea-94b1-e6e511227858/sub-contracts
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}dashboard/contracts-stats
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}departments
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}departments
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}departments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "HR",
+  "description": "This is Finance Department"
+}
+
+###
+PATCH {{base_url}}departments/70c9d969-6fcc-4415-8a90-7ad14a6e829a
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "HRR",
+  "description": "This is Finance Department"
+}
+
+###
+DELETE {{base_url}}departments/70c9d969-6fcc-4415-8a90-7ad14a6e829a
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}roles
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}suppliers
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/suppliers
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "admin Joseph",
+  "email": "breezoo@gmail.com",
+  "phone": "123456",
+  "dateOfBirth": "12-04-1994"
+}
+
+###
+GET {{base_url}}clients
+Authorization: Bearer {{token}}
+
+
+###
+POST {{base_url}}/clients
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "admin Joseph",
+  "email": "breezoo@gmail.com",
+  "phone": "123456",
+  "dateOfBirth": "12-04-1994"
+}
+
+###
+GET {{base_url}}contracts
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/contracts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "admin",
+  "description": "adminwer",
+  "supplier_id": "7cc2ec9f-ee6d-45a4-b823-042112b97146",
+  "department_id": "768074eb-cfbd-4d98-87ad-e606f0282faa",
+  "startDate": "12-04-1994",
+  "endDate": "12-04-1994"
+}
+
+###
+GET {{base_url}}permissions
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}sub-contracts/0aa0f5e5-f805-464d-8ede-d97a7c274ffd
+Authorization: Bearer {{token}}
+
+
+###
+POST {{base_url}}/sub-contracts/ed447c5d-2917-47e5-929c-e77ec9208534
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "admin",
+  "description": "adminwer",
+  "startDate": "12-04-1994",
+  "endDate": "12-04-1994"
+}
+
+###
+GET {{base_url}}fetch-data/contract-files
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}contract/ed447c5d-2917-47e5-929c-e77ec9208534/files
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}contracts/send-email
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}licences
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/licences
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "admin",
+  "description": "adminwer",
+  "typeOfBusiness": "7cc2ec9f-ee6d-45a4-b823-042112b97146",
+  "department_id": "52f95e9f-4580-4cb3-8fa7-df4b3f8dba1f",
+  "issuanceDate": "12-04-1994",
+  "licenceNumber": "adminwer",
+  "operatorName": "adminwer"
+}
+
+###
+GET {{base_url}}policies
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/policies
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "admin",
+  "description": "adminwer",
+  "supplier_id": "7cc2ec9f-ee6d-45a4-b823-042112b97146",
+  "department_id": "768074eb-cfbd-4d98-87ad-e606f0282faa",
+  "startDate": "12-04-1994",
+  "endDate": "12-04-1994"
+}
+
+###
+GET {{base_url}}settings/cron
+Authorization: Bearer {{token}}
+
+
+###
+POST {{base_url}}settings/cron
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "cron": "0 0 * * *"
+}
+
+###
+GET {{base_url}}notifications
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/notifications
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "title": "admin",
+  "description": "adminwer",
+  "forName": "Contract",
+  "forId": "bfc8ac56-d2ea-44bb-908d-b66be2bf061e",
+  "isRead": false,
+  "expiresAt": "1994-04-12",
+  "notifiedPersonnelId": "3b13d8c3-5ba3-4982-bc38-1c0d9772440e",
+  "redirectUrl": "/suppliers/7cc2ec9f-ee6d-45a4-b823-042112b97146",
+  "group": "procurement"
+}
+
+###
+GET {{base_url}}/parties
+Authorization: Bearer {{token}}
+
+
+###
+PATCH {{base_url}}/parties/661f37fc-0f3b-4b2e-ad67-2437c065956b
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "adminII Joseph",
+  "email": "breezoo@gmail.com",
+  "phone": "123456",
+  "description": "This is the sapmle party"
+}
+
+
+###
+POST {{base_url}}/parties
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "admin Joseph",
+  "email": "breezoo@gmail.com",
+  "phone": "123456",
+  "description": "This is the sapmle party"
+}
