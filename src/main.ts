@@ -13,7 +13,7 @@ async function bootstrap() {
   const port = process.env.PORT ?? 8000;
 
   app.enableCors();
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/v1');
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   const activityService = app.get(ActivityService);
   app.useGlobalInterceptors(new ActivityLoggerInterceptor(activityService));
@@ -21,6 +21,5 @@ async function bootstrap() {
   await app.listen(port);
 
   logger.log(`🚀 Server is running on http://localhost:${port}`);
-
 }
 bootstrap();

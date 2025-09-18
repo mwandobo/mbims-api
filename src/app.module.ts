@@ -27,6 +27,7 @@ import { ActivityLogsModule } from './common/activity-logs/activity-logs.module'
 import { SettingsModule } from './settings/settings.module';
 import { NotificationModule } from './notification/notification.module';
 import { PartyModule } from './party/party.module';
+import { ExcelComparisonModule } from './excel-comparison/excel-comparison.module';
 
 @Module({
   imports: [
@@ -55,7 +56,7 @@ import { PartyModule } from './party/party.module';
     ActivityLogsModule,
     SettingsModule,
     NotificationModule,
-
+    ExcelComparisonModule
   ],
   controllers: [AppController],
   providers: [
