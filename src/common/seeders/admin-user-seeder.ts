@@ -208,6 +208,15 @@ export class AdminUserSeederService implements OnModuleInit {
           },
         ],
       },
+      {
+        group: 'compare_excel',
+        permissions: [
+          {
+            name: 'compare_excel_read',
+            description: 'Compare Excel for Reconcile',
+          },
+        ],
+      },
     ];
 
     const allPermissions: Permission[] = [];
@@ -264,9 +273,8 @@ export class AdminUserSeederService implements OnModuleInit {
       }
     }
 
-
     // 3. Check if admin user already exists
-    const adminEmail = 'legal.system@sportpesa.co.tz';
+    const adminEmail = 'bmwandobo@mwalimubank.co.tz';
 
     const existingAdmin = await this.userRepository.findOne({
       where: { email: adminEmail },
@@ -278,9 +286,9 @@ export class AdminUserSeederService implements OnModuleInit {
       const hashedPassword = await bcrypt.hash('123456', 10);
 
       await this.userRepository.save({
-        name: 'Legal System',
-        email: 'legal.system@sportpesa.co.tz',
-        username: 'legal.system',
+        name: 'Super Administrator',
+        email: adminEmail,
+        username: 'admin',
         password: hashedPassword,
         role: adminRole,
         isActive: true,

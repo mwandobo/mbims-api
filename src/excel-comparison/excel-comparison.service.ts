@@ -207,7 +207,6 @@ export class ExcelComparisonService extends BaseService<ExcelComparisonEntity> {
   //   };
   // }
 
-
   // async compareExcel(
   //   files: Express.Multer.File[],
   // ): Promise<any> {
@@ -288,7 +287,6 @@ export class ExcelComparisonService extends BaseService<ExcelComparisonEntity> {
   //   };
   // }
 
-
   // async compareExcel(files: Express.Multer.File[]): Promise<any> {
   //   if (!files || files.length < 2) {
   //     this.logger.error('Less than 2 files uploaded');
@@ -367,18 +365,19 @@ export class ExcelComparisonService extends BaseService<ExcelComparisonEntity> {
   //   };
   // }
 
-
-
   async compareExcel(files: Express.Multer.File[]): Promise<any> {
     if (!files || files.length < 2) {
       this.logger.error('Less than 2 files uploaded');
-      throw new BadRequestException('Two Excel files are required for comparison');
+      throw new BadRequestException(
+        'Two Excel files are required for comparison',
+      );
     }
 
     this.logger.log(`Received ${files.length} files for comparison`);
 
     // Helper to normalize values (convert to string and trim)
-    const normalize = (val: any) => (val !== null && val !== undefined ? String(val).trim() : '');
+    const normalize = (val: any) =>
+      val !== null && val !== undefined ? String(val).trim() : '';
 
     // Parse both files
     const datasets = files.map((file) => {
@@ -387,17 +386,23 @@ export class ExcelComparisonService extends BaseService<ExcelComparisonEntity> {
       const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
       // Force array of arrays
-      const data: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as any[];
+      const data: any[][] = XLSX.utils.sheet_to_json(sheet, {
+        header: 1,
+      }) as any[];
       this.logger.debug(`${file.originalname} rows parsed: ${data.length}`);
 
       // Find the header row safely
       const headerRow = data.find(
-        (row) => Array.isArray(row) && (row.includes('Reference Number') || row.includes('RRN'))
+        (row) =>
+          Array.isArray(row) &&
+          (row.includes('Reference Number') || row.includes('RRN')),
       );
 
       if (!headerRow) {
         this.logger.error(`No valid header found in ${file.originalname}`);
-        throw new BadRequestException(`Could not detect headers in ${file.originalname}`);
+        throw new BadRequestException(
+          `Could not detect headers in ${file.originalname}`,
+        );
       }
 
       const colIndex =
@@ -406,7 +411,9 @@ export class ExcelComparisonService extends BaseService<ExcelComparisonEntity> {
           : headerRow.indexOf('RRN');
 
       if (colIndex === -1) {
-        throw new BadRequestException(`Could not find valid column in ${file.originalname}`);
+        throw new BadRequestException(
+          `Could not find valid column in ${file.originalname}`,
+        );
       }
 
       const key = headerRow[colIndex];
@@ -418,10 +425,12 @@ export class ExcelComparisonService extends BaseService<ExcelComparisonEntity> {
         data
           .slice(startRow)
           .map((row) => (Array.isArray(row) ? normalize(row[colIndex]) : null))
-          .filter((v) => v !== null && v !== '')
+          .filter((v) => v !== null && v !== ''),
       );
 
-      this.logger.log(`Extracted ${values.size} values from ${file.originalname}`);
+      this.logger.log(
+        `Extracted ${values.size} values from ${file.originalname}`,
+      );
 
       return {
         fileName: file.originalname,
@@ -444,16 +453,16 @@ export class ExcelComparisonService extends BaseService<ExcelComparisonEntity> {
     };
 
     this.logger.log(`Found ${matches.length} matches`);
-    this.logger.warn(`Missing in ${setA.fileName}: ${missing[setA.fileName].length}`);
-    this.logger.warn(`Missing in ${setB.fileName}: ${missing[setB.fileName].length}`);
+    this.logger.warn(
+      `Missing in ${setA.fileName}: ${missing[setA.fileName].length}`,
+    );
+    this.logger.warn(
+      `Missing in ${setB.fileName}: ${missing[setB.fileName].length}`,
+    );
 
     return {
       matches,
       missing,
     };
   }
-
-
-
-
 }
