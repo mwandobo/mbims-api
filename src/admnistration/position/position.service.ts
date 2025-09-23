@@ -32,7 +32,10 @@ export class PositionService extends BaseService<PositionEntity> {
       pagination,
       ['department'], // relations
       {
-        fields: ['name'], // fields in contracts table
+        fields: ['name', 'description'],
+        relations:{
+          department: ['name'], // search supplier.name and supplier.email
+        },
       },
     );
 
