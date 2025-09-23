@@ -13,7 +13,7 @@ export class PositionResponseDto {
   description: string;
 
   @Expose()
-  department_name: string;
+  departmentName: string;
 
   @Expose()
   status: string;
@@ -28,7 +28,7 @@ export class PositionResponseDto {
     const dto = new PositionResponseDto();
     dto.id = position.id;
     dto.name = position.name;
-    dto.department_name = position.department?.name ?? '';
+    dto.departmentName = position.department?.name ?? '';
     dto.description = position.description;
     return dto;
   }

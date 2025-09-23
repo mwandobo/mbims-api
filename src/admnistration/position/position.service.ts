@@ -1,5 +1,5 @@
 // positions/position.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -23,6 +23,7 @@ export class PositionService extends BaseService<PositionEntity> {
   ) {
     super(repo);
   }
+  private readonly logger = new Logger(PositionService.name);
 
   async findAll(
     pagination: PaginationDto,
@@ -45,6 +46,7 @@ export class PositionService extends BaseService<PositionEntity> {
 
   // Create
   async create(dto: CreatePositionDto): Promise<PositionResponseDto> {
+    this.logger.log(dto );
     const { department_id, ...createPositionDto } = dto;
     const department = await this.validateDepartment(department_id);
     const position = this.repo.create({ department, ...createPositionDto });
@@ -57,13 +59,14 @@ export class PositionService extends BaseService<PositionEntity> {
   async findOne(id: string): Promise<PositionResponseDto> {
     const position = await this.repo.findOne({
       where: { id },
+      relations: ['department']
     });
 
     if (!position) {
       throw new NotFoundException(`Position with ID ${id} not found`);
     }
 
-    return plainToInstance(PositionResponseDto, position);
+    return PositionResponseDto.fromPosition(position);
   }
 
   private async validateDepartment(

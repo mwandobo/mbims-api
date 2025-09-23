@@ -18,14 +18,17 @@ import { PaginationDto } from '../../common/dtos/pagination.dto';
 export class PositionController {
   constructor(private readonly service: PositionService) {}
 
-  @Post()
-  create(@Body() createDepartmentDto: CreatePositionDto) {
-    return this.service.create(createDepartmentDto);
-  }
+
 
   @Get()
   async findAll(@Pagination() pagination: PaginationDto) {
     return this.service.findAll(pagination);
+  }
+
+  @Post()
+  create(@Body() createDepartmentDto: CreatePositionDto) {
+    console.log('createDepartmentDto', createDepartmentDto)
+    return this.service.create(createDepartmentDto);
   }
 
   @Get(':id')

@@ -47,6 +47,15 @@ export class AdminUserSeederService implements OnModuleInit {
         ],
       },
       {
+        group: 'position',
+        permissions: [
+          { name: 'position_create', description: 'Create positions' },
+          { name: 'position_read', description: 'View positions' },
+          { name: 'position_update', description: 'Edit positions' },
+          { name: 'position_delete', description: 'Delete positions' },
+        ],
+      },
+      {
         group: 'contract',
         permissions: [
           { name: 'contract_create', description: 'Create contracts' },
