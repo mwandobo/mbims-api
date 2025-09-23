@@ -4,9 +4,9 @@ import {
   Column,
  ManyToOne,
 } from 'typeorm';
-import { Department } from '../../department/entities/department.entity';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { Supplier } from '../../suppliers/entities/supplier.entity';
+import { DepartmentEntity } from '../../admnistration/department/entities/department.entity';
 
 @Entity('licences')
 export class Licence extends BaseEntity {
@@ -19,8 +19,8 @@ export class Licence extends BaseEntity {
   @Column('text')
   description: string;
 
-  @ManyToOne(() => Department, (department) => department.contracts)
-  department: Department;
+  @ManyToOne(() => DepartmentEntity, (department) => department.contracts)
+  department: DepartmentEntity;
 
   @ManyToOne(() => Supplier, (supplier) => supplier.contracts)
   supplier: Supplier;

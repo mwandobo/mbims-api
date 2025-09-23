@@ -1,8 +1,7 @@
-// departments/department.service.ts
+// departments/position.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Department } from './entities/department.entity';
 
 import { plainToInstance } from 'class-transformer';
 import { DepartmentResponseDto } from './dtos/department-response.dto';
@@ -11,14 +10,15 @@ import { UpdateDepartmentDto } from './dtos/update-department.dto';
 import {
   PaginatedResponseDto,
   PaginationDto,
-} from '../common/dtos/pagination.dto';
-import { BaseService } from '../common/services/base-service';
+} from '../../common/dtos/pagination.dto';
+import { BaseService } from '../../common/services/base-service';
+import { DepartmentEntity } from './entities/department.entity';
 
 @Injectable()
-export class DepartmentService extends BaseService<Department> {
+export class DepartmentService extends BaseService<DepartmentEntity> {
   constructor(
-    @InjectRepository(Department)
-    private readonly departmentRepository: Repository<Department>,
+    @InjectRepository(DepartmentEntity)
+    private readonly departmentRepository: Repository<DepartmentEntity>,
   ) {
     super(departmentRepository);
   }

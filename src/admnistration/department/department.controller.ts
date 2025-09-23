@@ -11,8 +11,8 @@ import {
 import { DepartmentService } from './department.service';
 import { CreateDepartmentDto } from './dtos/create-department.dto';
 import { UpdateDepartmentDto } from './dtos/update-department.dto';
-import { Pagination } from '../common/decorators/pagination.decorator';
-import { PaginationDto } from '../common/dtos/pagination.dto';
+import { Pagination } from '../../common/decorators/pagination.decorator';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
 
 @Controller('departments')
 export class DepartmentController {

@@ -5,9 +5,9 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '../../admnistration/roles/entities/role.entity';
 import { BaseEntity } from '../../common/entities/base.entity';
-import { Department } from '../../department/entities/department.entity';
+import { DepartmentEntity } from '../../admnistration/department/entities/department.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -30,9 +30,9 @@ export class User extends BaseEntity {
   @JoinColumn({ name: 'role_id' })
   role: Role; // Use Relation type
 
-  @ManyToOne(() => Department, (department) => department.users)
+  @ManyToOne(() => DepartmentEntity, (department) => department.users)
   @JoinColumn({ name: 'department_id' })
-  department: Department;
+  department: DepartmentEntity;
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;

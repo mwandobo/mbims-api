@@ -1,6 +1,7 @@
 // contracts/dto/contract-response.dto.ts
 import { Expose } from 'class-transformer';
-import { Department } from '../entities/department.entity';
+import { PositionEntity } from '../../position/entities/position.entity';
+import { DepartmentEntity } from '../entities/department.entity';
 
 export class DepartmentResponseDto {
   @Expose()
@@ -21,7 +22,7 @@ export class DepartmentResponseDto {
   @Expose()
   updatedAt: Date;
 
-  static fromDepartment(department: Department): DepartmentResponseDto {
+  static fromDepartment(department: DepartmentEntity): DepartmentResponseDto {
     const dto = new DepartmentResponseDto();
     dto.id = department.id;
     dto.name = department.name;

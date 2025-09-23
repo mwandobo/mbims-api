@@ -2,15 +2,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Injectable } from '@nestjs/common';
 import { Supplier } from '../suppliers/entities/supplier.entity';
 import { Repository } from 'typeorm';
-import { Department } from '../department/entities/department.entity';
 import { Client } from '../clients/entities/client.entity';
 import { SupplierResponseDto } from '../suppliers/dtos/supplier-response.dto';
 import { ClientResponseDto } from '../clients/dtos/client-response.dto';
-import { DepartmentResponseDto } from '../department/dtos/department-response.dto';
-import { RoleResponseDto } from '../roles/dtos/role-response.dto';
-import { Role } from '../roles/entities/role.entity';
+import { DepartmentResponseDto } from '../admnistration/department/dtos/department-response.dto';
+import { RoleResponseDto } from '../admnistration/roles/dtos/role-response.dto';
+import { Role } from '../admnistration/roles/entities/role.entity';
 import { PartyResponseDto } from '../party/dtos/party-response.dto';
 import { Party } from '../party/entities/party.entity';
+import { DepartmentEntity } from '../admnistration/department/entities/department.entity';
 
 @Injectable()
 export class DataFetchService {
@@ -19,8 +19,8 @@ export class DataFetchService {
     private readonly clientRepository: Repository<Client>,
     @InjectRepository(Supplier)
     private readonly supplierRepository: Repository<Supplier>,
-    @InjectRepository(Department)
-    private readonly departmentRepository: Repository<Department>,
+    @InjectRepository(DepartmentEntity)
+    private readonly departmentRepository: Repository<DepartmentEntity>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(Party)

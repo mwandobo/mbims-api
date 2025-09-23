@@ -1,0 +1,12 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PositionController } from './position.controller';
+import { PositionService } from './position.service';
+import { PositionEntity } from './entities/position.entity';
+
+@Module({
+  imports: [TypeOrmModule.forFeature([PositionEntity])], // must import the entity here
+  controllers: [PositionController],
+  providers: [PositionService],
+})
+export class PositionModule {}

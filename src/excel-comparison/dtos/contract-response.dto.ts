@@ -46,7 +46,6 @@ export class ContractResponseDto {
   ): ContractResponseDto {
     const dto = new ContractResponseDto();
     dto.id = excel.id;
-    dto.departmentName = excel.department?.name || '';
     dto.farthestExtendedDate = extensionData?.farthestExtendedDate;
     dto.totalExtensionAmount = extensionData?.totalExtensionAmount || 0;
     const baseUrl = process.env.baseUrl ?? 'http://localhost:8001'; // Your production base URL

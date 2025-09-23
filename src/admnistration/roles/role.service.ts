@@ -8,8 +8,8 @@ import { Permission } from '../permissions/entities/permission.entity';
 import {
   PaginatedResponseDto,
   PaginationDto,
-} from '../common/dtos/pagination.dto';
-import { BaseService } from '../common/services/base-service';
+} from '../../common/dtos/pagination.dto';
+import { BaseService } from '../../common/services/base-service';
 import { RoleResponseDto } from './dtos/role-response.dto';
 
 @Injectable()

@@ -3,12 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-import multer from 'multer';
 
 import { CreateLicenceDto } from './dtos/create-licence.dto';
 import { UpdateLicenceDto } from './dtos/update-licence.dto';
 import { LicenceResponseDto } from './dtos/licence-response.dto';
-import { Department } from '../department/entities/department.entity';
 import { Supplier } from '../suppliers/entities/supplier.entity';
 import { Licence } from './entities/licence.entity';
 import {
@@ -16,6 +14,7 @@ import {
   PaginationDto,
 } from '../common/dtos/pagination.dto';
 import { BaseService } from '../common/services/base-service';
+import { DepartmentEntity } from '../admnistration/department/entities/department.entity';
 
 @Injectable()
 export class LicencesService extends BaseService<Licence> {
@@ -26,8 +25,8 @@ export class LicencesService extends BaseService<Licence> {
     private readonly licencesRepository: Repository<Licence>,
     @InjectRepository(Supplier)
     private readonly supplierRepository: Repository<Supplier>,
-    @InjectRepository(Department)
-    private readonly departmentsRepository: Repository<Department>,
+    @InjectRepository(DepartmentEntity)
+    private readonly departmentsRepository: Repository<DepartmentEntity>,
   ) {
     super(licencesRepository);
     this.ensureUploadDirectoryExists();
@@ -151,7 +150,7 @@ export class LicencesService extends BaseService<Licence> {
     return supplier;
   }
 
-  private async validateDepartment(departmentId: string): Promise<Department> {
+  private async validateDepartment(departmentId: string): Promise<DepartmentEntity> {
     const department = await this.departmentsRepository.findOne({
       where: { id: departmentId },
     });

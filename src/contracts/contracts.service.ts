@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -7,14 +6,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-import multer from 'multer';
 
 import { Contract } from './entities/contracts.entity';
 import { CreateContractDto } from './dtos/create-contract.dto';
 import { UpdateContractDto } from './dtos/update-contract.dto';
-import { Department } from '../department/entities/department.entity';
-import { Supplier } from '../suppliers/entities/supplier.entity';
-import { Client } from '../clients/entities/client.entity';
 import { BaseService } from '../common/services/base-service';
 import {
   PaginatedResponseDto,
@@ -22,6 +17,7 @@ import {
 } from '../common/dtos/pagination.dto';
 import { ContractResponseDto } from './dtos/contract-response.dto';
 import { Party } from '../party/entities/party.entity';
+import { DepartmentEntity } from '../admnistration/department/entities/department.entity';
 
 @Injectable()
 export class ContractsService extends BaseService<Contract> {
@@ -36,8 +32,8 @@ export class ContractsService extends BaseService<Contract> {
     // private readonly clientRepository: Repository<Client>,
     @InjectRepository(Party)
     private readonly partyRepository: Repository<Party>,
-    @InjectRepository(Department)
-    private readonly departmentsRepository: Repository<Department>,
+    @InjectRepository(DepartmentEntity)
+    private readonly departmentsRepository: Repository<DepartmentEntity>,
   ) {
     super(contractsRepository);
     this.ensureUploadDirectoryExists();
@@ -212,7 +208,7 @@ export class ContractsService extends BaseService<Contract> {
   //   return client;
   // }
 
-  private async validateDepartment(departmentId: string): Promise<Department> {
+  private async validateDepartment(departmentId: string): Promise<DepartmentEntity> {
     const department = await this.departmentsRepository.findOne({
       where: { id: departmentId },
     });

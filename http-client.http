@@ -143,7 +143,12 @@ Authorization: Bearer {{token}}
 
 ###
 POST {{base_url}}/clients
-Authorization: Bearer {{token}}
+Authorization: Bearer {{token}}         {
+                name: 'Parties',
+                path: '/administration/parties',
+                permission: 'party_read',
+                icon: RollerCoaster
+            },
 Content-Type: application/json
 
 {
@@ -305,3 +310,33 @@ Content-Type: application/json
   "phone": "123456",
   "description": "This is the sapmle party"
 }
+
+
+
+###
+GET {{base_url}}/positions
+Authorization: Bearer {{token}}
+
+
+###
+PATCH {{base_url}}/parties/661f37fc-0f3b-4b2e-ad67-2437c065956b
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "adminII Joseph",
+  "description": "This is the sapmle party"
+}
+
+
+###
+POST {{base_url}}/positions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Head of Department",
+  "description": "This is the sapmle party",
+  "department_id": "06cfccc5-5301-440a-8d30-2ebb37195cf8"
+}
+

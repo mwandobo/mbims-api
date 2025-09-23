@@ -4,9 +4,9 @@ import { AppService } from './app.service';
 import { DatabaseModule } from './common/database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './users/user.module';
-import { RoleModule } from './roles/role.module';
-import { PermissionModule } from './permissions/permission.module';
-import { DepartmentModule } from './department/department.module';
+import { RoleModule } from './admnistration/roles/role.module';
+import { PermissionModule } from './admnistration/permissions/permission.module';
+import { DepartmentModule } from './admnistration/department/department.module';
 import { AuthModule } from './auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './auth/guards/role.guard';
@@ -28,6 +28,7 @@ import { SettingsModule } from './settings/settings.module';
 import { NotificationModule } from './notification/notification.module';
 import { PartyModule } from './party/party.module';
 import { ExcelComparisonModule } from './excel-comparison/excel-comparison.module';
+import { PositionModule } from './admnistration/position/position.module';
 
 @Module({
   imports: [
@@ -56,7 +57,8 @@ import { ExcelComparisonModule } from './excel-comparison/excel-comparison.modul
     ActivityLogsModule,
     SettingsModule,
     NotificationModule,
-    ExcelComparisonModule
+    ExcelComparisonModule,
+    PositionModule
   ],
   controllers: [AppController],
   providers: [

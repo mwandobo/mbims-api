@@ -3,19 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
-import multer from 'multer';
 
 import { CreatePolicyDto } from './dtos/create-policy.dto';
 import { UpdatePolicyDto } from './dtos/update-policy.dto';
 import { PolicyResponseDto } from './dtos/policy-response.dto';
-import { Department } from '../department/entities/department.entity';
-import { Supplier } from '../suppliers/entities/supplier.entity';
 import {
   PaginatedResponseDto,
   PaginationDto,
 } from '../common/dtos/pagination.dto';
 import { BaseService } from '../common/services/base-service';
 import { Policy } from './entities/policy.entity';
+import { DepartmentEntity } from '../admnistration/department/entities/department.entity';
 
 @Injectable()
 export class PolicyService extends BaseService<Policy> {
@@ -25,8 +23,8 @@ export class PolicyService extends BaseService<Policy> {
     @InjectRepository(Policy)
     private readonly policyRepository: Repository<Policy>,
 
-    @InjectRepository(Department)
-    private readonly departmentsRepository: Repository<Department>,
+    @InjectRepository(DepartmentEntity)
+    private readonly departmentsRepository: Repository<DepartmentEntity>,
   ) {
     super(policyRepository);
     this.ensureUploadDirectoryExists();
@@ -139,7 +137,7 @@ export class PolicyService extends BaseService<Policy> {
   }
 
 
-  private async validateDepartment(departmentId: string): Promise<Department> {
+  private async validateDepartment(departmentId: string): Promise<DepartmentEntity> {
     const department = await this.departmentsRepository.findOne({
       where: { id: departmentId },
     });

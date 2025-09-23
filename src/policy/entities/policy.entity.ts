@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Department } from '../../department/entities/department.entity';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { Supplier } from '../../suppliers/entities/supplier.entity';
+import { DepartmentEntity } from '../../admnistration/department/entities/department.entity';
 
 @Entity('policies')
 export class Policy extends BaseEntity {
@@ -26,8 +26,8 @@ export class Policy extends BaseEntity {
   @Column({ nullable: true })
   nextRenewalDate: string;
 
-  @ManyToOne(() => Department, (department) => department.contracts)
-  department: Department;
+  @ManyToOne(() => DepartmentEntity, (department) => department.contracts)
+  department: DepartmentEntity;
 
   @Column({ nullable: true })
   fileUrl: string;

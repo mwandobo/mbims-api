@@ -6,7 +6,6 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Department } from '../../department/entities/department.entity';
 import { BaseEntity } from '../../common/entities/base.entity';
 import { Supplier } from '../../suppliers/entities/supplier.entity';
 import { Client } from '../../clients/entities/client.entity';
@@ -14,6 +13,7 @@ import { SubContract } from '../../sub-contracts/entities/sub-contracts.entity';
 import { ContractFile } from '../../contract-files/entities/contract-files.entity';
 import { ContractExtension } from '../../contract-extensions/entities/contract-extension.entity';
 import { Party } from '../../party/entities/party.entity';
+import { DepartmentEntity } from '../../admnistration/department/entities/department.entity';
 
 @Entity('contracts')
 export class Contract extends BaseEntity {
@@ -29,8 +29,8 @@ export class Contract extends BaseEntity {
   @Column('text')
   description: string;
 
-  @ManyToOne(() => Department, (department) => department.contracts)
-  department: Department;
+  @ManyToOne(() => DepartmentEntity, (department) => department.contracts)
+  department: DepartmentEntity;
 
   @Column({ default: 'supplier' })
   group: 'supplier' | 'client';

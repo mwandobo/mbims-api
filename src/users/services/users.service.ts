@@ -10,13 +10,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserResponseDto } from '../dtos/user-response.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
-import { Role } from '../../roles/entities/role.entity';
-import { Department } from '../../department/entities/department.entity';
+import { Role } from '../../admnistration/roles/entities/role.entity';
 import {
   PaginatedResponseDto,
   PaginationDto,
 } from '../../common/dtos/pagination.dto';
 import { BaseService } from '../../common/services/base-service';
+import { DepartmentEntity } from '../../admnistration/department/entities/department.entity';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -25,8 +25,8 @@ export class UsersService extends BaseService<User> {
     private readonly usersRepository: Repository<User>,
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
-    @InjectRepository(Department)
-    private readonly departmentRepository: Repository<Department>,
+    @InjectRepository(DepartmentEntity)
+    private readonly departmentRepository: Repository<DepartmentEntity>,
   ) {
     super(usersRepository);
   }

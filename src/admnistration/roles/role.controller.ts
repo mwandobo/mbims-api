@@ -2,8 +2,8 @@
 import { Controller, Post, Get, Body, Param } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dtos/role.dto';
-import { Pagination } from '../common/decorators/pagination.decorator';
-import { PaginationDto } from '../common/dtos/pagination.dto';
+import { Pagination } from '../../common/decorators/pagination.decorator';
+import { PaginationDto } from '../../common/dtos/pagination.dto';
 
 @Controller('roles')
 export class RoleController {
