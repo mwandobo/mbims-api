@@ -7,18 +7,19 @@ import { plainToInstance } from 'class-transformer';
 import { PositionResponseDto } from './dtos/position-response.dto';
 import { CreatePositionDto } from './dtos/create-position.dto';
 import { UpdatePositionDto } from './dtos/update-position.dto';
-import {
-  PaginatedResponseDto,
-  PaginationDto,
-} from '../../common/dtos/pagination.dto';
+import { PaginatedResponseDto, PaginationDto, } from '../../common/dtos/pagination.dto';
 import { BaseService } from '../../common/services/base-service';
 import { PositionEntity } from './entities/position.entity';
+import { DepartmentEntity } from '../department/entities/department.entity';
 
 @Injectable()
 export class PositionService extends BaseService<PositionEntity> {
   constructor(
     @InjectRepository(PositionEntity)
     private readonly repo: Repository<PositionEntity>,
+
+    @InjectRepository(DepartmentEntity)
+    private readonly departmentRepository: Repository<DepartmentEntity>,
   ) {
     super(repo);
   }
@@ -43,10 +44,11 @@ export class PositionService extends BaseService<PositionEntity> {
   }
 
   // Create
-  async create(
-    createPositionDto: CreatePositionDto,
-  ): Promise<PositionResponseDto> {
-    const position = this.repo.create(createPositionDto);
+  async create(dto: CreatePositionDto): Promise<PositionResponseDto> {
+    const { department_id, ...createPositionDto } = dto;
+    const department = await this.validateDepartment(department_id);
+    const position = this.repo.create({ department, ...createPositionDto });
+
     const savedPosition = await this.repo.save(position);
     return plainToInstance(PositionResponseDto, savedPosition);
   }
@@ -64,6 +66,20 @@ export class PositionService extends BaseService<PositionEntity> {
     return plainToInstance(PositionResponseDto, position);
   }
 
+  private async validateDepartment(
+    departmentId: string,
+  ): Promise<DepartmentEntity> {
+    const department = await this.departmentRepository.findOne({
+      where: { id: departmentId },
+    });
+    if (!department) {
+      throw new NotFoundException(
+        `Department with ID ${departmentId} not found`,
+      );
+    }
+    return department;
+  }
+
   // Update
   async update(
     id: string,
@@ -74,10 +90,13 @@ export class PositionService extends BaseService<PositionEntity> {
       ...updatePositionDto,
     });
 
+    const { department_id, ...dto } = updatePositionDto;
+
     if (!position) {
       throw new NotFoundException(`Position with ID ${id} not found`);
     }
 
+    position.department = await this.validateDepartment(department_id);
     const updatedPosition = await this.repo.save(position);
     return plainToInstance(PositionResponseDto, updatedPosition);
   }

@@ -319,13 +319,15 @@ Authorization: Bearer {{token}}
 
 
 ###
-PATCH {{base_url}}/parties/661f37fc-0f3b-4b2e-ad67-2437c065956b
+PATCH {{base_url}}/positions/2602818b-2dbf-4ae3-9b25-c5e05d4f0afd
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
+
 {
-  "name": "adminII Joseph",
-  "description": "This is the sapmle party"
+  "name": "Head of Departmentt",
+  "description": "This is the sapmle party",
+  "department_id": "06cfccc5-5301-440a-8d30-2ebb37195cf8"
 }
 
 

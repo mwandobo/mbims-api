@@ -28,7 +28,7 @@ export class PositionResponseDto {
     const dto = new PositionResponseDto();
     dto.id = position.id;
     dto.name = position.name;
-    dto.department_name = position.department.name ?? '';
+    dto.department_name = position.department?.name ?? '';
     dto.description = position.description;
     return dto;
   }
