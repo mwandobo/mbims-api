@@ -30,6 +30,7 @@ import { PartyModule } from './party/party.module';
 import { ExcelComparisonModule } from './excel-comparison/excel-comparison.module';
 import { PositionModule } from './admnistration/position/position.module';
 import { AssetCategoryModule } from './assets-management/asset-category/asset-category.module';
+import { AssetModule } from './assets-management/asset/asset.module';
 
 @Module({
   imports: [
@@ -60,7 +61,8 @@ import { AssetCategoryModule } from './assets-management/asset-category/asset-ca
     NotificationModule,
     ExcelComparisonModule,
     PositionModule,
-    AssetCategoryModule
+    AssetCategoryModule,
+    AssetModule
   ],
   controllers: [AppController],
   providers: [
