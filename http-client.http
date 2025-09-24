@@ -338,3 +338,32 @@ Content-Type: application/json
   "description": "This is the sapmle party",
   "department_id": "06cfccc5-5301-440a-8d30-2ebb37195cf8"
 }
+
+
+###
+GET {{base_url}}/asset-categories
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}/asset-categories/2602818b-2dbf-4ae3-9b25-c5e05d4f0afd
+Authorization: Bearer {{token}}
+
+###
+PATCH {{base_url}}/asset-categories/6574cbb0-780c-4fb1-8cc3-ebb64a1f0a1a
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Head of Departmenttt",
+  "description": "This is the sapmle party"
+}
+
+###
+POST {{base_url}}/asset-categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Head of Department",
+  "description": "This is the sapmle party"
+}

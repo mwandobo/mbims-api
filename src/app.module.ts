@@ -29,6 +29,7 @@ import { NotificationModule } from './notification/notification.module';
 import { PartyModule } from './party/party.module';
 import { ExcelComparisonModule } from './excel-comparison/excel-comparison.module';
 import { PositionModule } from './admnistration/position/position.module';
+import { AssetCategoryModule } from './assets-management/asset-category/asset-category.module';
 
 @Module({
   imports: [
@@ -58,7 +59,8 @@ import { PositionModule } from './admnistration/position/position.module';
     SettingsModule,
     NotificationModule,
     ExcelComparisonModule,
-    PositionModule
+    PositionModule,
+    AssetCategoryModule
   ],
   controllers: [AppController],
   providers: [
