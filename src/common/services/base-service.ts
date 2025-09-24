@@ -21,9 +21,41 @@ export abstract class BaseService<T> {
       .skip(skip);
 
     // Add relations
+    // relations.forEach((relation) => {
+    //   queryBuilder.leftJoinAndSelect(`entity.${relation}`, relation);
+    // });
+
+    // relations.forEach((relation) => {
+    //   const parts = relation.split('.');
+    //   let parentAlias = 'entity';
+    //
+    //   parts.forEach((part, index) => {
+    //     const alias = parts.slice(0, index + 1).join('_'); // e.g., items_asset
+    //     queryBuilder.leftJoinAndSelect(`${parentAlias}.${part}`, alias);
+    //     parentAlias = alias;
+    //   });
+    // });
+
+
+    const joinedAliases = new Set<string>();
+
     relations.forEach((relation) => {
-      queryBuilder.leftJoinAndSelect(`entity.${relation}`, relation);
+      const parts = relation.split('.');
+      let parentAlias = 'entity';
+
+      parts.forEach((part, index) => {
+        const alias = parts.slice(0, index + 1).join('_'); // e.g., items_asset
+
+        if (!joinedAliases.has(alias)) {
+          queryBuilder.leftJoinAndSelect(`${parentAlias}.${part}`, alias);
+          joinedAliases.add(alias);
+        }
+
+        parentAlias = alias;
+      });
     });
+
+
 
     // Add search if query and fields provided
     if (

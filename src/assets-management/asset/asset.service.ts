@@ -1,4 +1,4 @@
-// assets/asset.service.ts
+// assets/asset-request.service.ts
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';

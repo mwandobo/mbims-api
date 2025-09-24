@@ -3,10 +3,11 @@ import {
   PrimaryGeneratedColumn,
   Column,
   BaseEntity,
-  OneToMany,
   ManyToOne,
+  OneToMany,
 } from 'typeorm';
 import { AssetCategoryEntity } from '../asset-category/asset-category.entity';
+import { AssetRequestItemEntity } from '../asset-request/entity/asset-request-item.entity';
 
 @Entity('assets')
 export class AssetEntity extends BaseEntity{
@@ -21,4 +22,7 @@ export class AssetEntity extends BaseEntity{
 
   @ManyToOne(() => AssetCategoryEntity, (assetCategory) => assetCategory.assets)
   category: AssetCategoryEntity;
+
+  @OneToMany(() => AssetRequestItemEntity, (item) => item.asset)
+  requestItems: AssetRequestItemEntity[];
 }

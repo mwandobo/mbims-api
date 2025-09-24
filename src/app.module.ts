@@ -31,6 +31,7 @@ import { ExcelComparisonModule } from './excel-comparison/excel-comparison.modul
 import { PositionModule } from './admnistration/position/position.module';
 import { AssetCategoryModule } from './assets-management/asset-category/asset-category.module';
 import { AssetModule } from './assets-management/asset/asset.module';
+import { AssetRequestModule } from './assets-management/asset-request/asset-request.module';
 
 @Module({
   imports: [
@@ -62,7 +63,8 @@ import { AssetModule } from './assets-management/asset/asset.module';
     ExcelComparisonModule,
     PositionModule,
     AssetCategoryModule,
-    AssetModule
+    AssetModule,
+    AssetRequestModule
   ],
   controllers: [AppController],
   providers: [
