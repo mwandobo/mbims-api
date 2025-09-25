@@ -14,7 +14,7 @@ export class AssetRequestEntity extends BaseEntity{
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   name: string;
 
   @Column()

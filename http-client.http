@@ -345,6 +345,16 @@ GET {{base_url}}/asset-categories
 Authorization: Bearer {{token}}
 
 ###
+POST {{base_url}}/asset-categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Cat 2",
+  "description": "Description for Cat 2"
+}
+
+###
 GET {{base_url}}/asset-categories/2602818b-2dbf-4ae3-9b25-c5e05d4f0afd
 Authorization: Bearer {{token}}
 
@@ -358,19 +368,23 @@ Content-Type: application/json
   "description": "This is the sapmle party"
 }
 
-###
-POST {{base_url}}/asset-categories
-Authorization: Bearer {{token}}
-Content-Type: application/json
 
-{
-  "name": "Head of Department",
-  "description": "This is the sapmle party"
-}
 
 ###
 GET {{base_url}}/assets
 Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/assets
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Asset 2",
+  "description": "This is the sapmle party",
+  "category_id": "f6c3bb1d-4030-427a-ad0c-8c1e8a33d0cb"
+}
+
 
 ###
 GET {{base_url}}/assets/2602818b-2dbf-4ae3-9b25-c5e05d4f0afd
@@ -386,20 +400,30 @@ Content-Type: application/json
   "description": "This is the sapmle party"
 }
 
-###
-POST {{base_url}}/assets
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-  "name": "Asset 2",
-  "description": "This is the sapmle party",
-  "category_id": "6574cbb0-780c-4fb1-8cc3-ebb64a1f0a1a"
-}
 
 ###
 GET {{base_url}}/asset-requests
 Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/asset-requests
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Main Request",
+  "description": "Main Request Description",
+  "items": [
+    {
+      "asset_id": "f9ef7f0e-e231-4aab-b178-75e704c68aa0",
+      "quantity": 5
+    },
+    {
+      "asset_id": "fb45c4f0-673c-43fb-b941-1615f195870e",
+      "quantity": 2
+    }
+  ]
+}
 
 ###
 GET {{base_url}}/asset-request/2602818b-2dbf-4ae3-9b25-c5e05d4f0afd
@@ -415,13 +439,3 @@ Content-Type: application/json
   "description": "This is the sapmle party"
 }
 
-###
-POST {{base_url}}/assets
-Authorization: Bearer {{token}}
-Content-Type: application/json
-
-{
-  "name": "Asset 2",
-  "description": "This is the sapmle party",
-  "category_id": "6574cbb0-780c-4fb1-8cc3-ebb64a1f0a1a"
-}

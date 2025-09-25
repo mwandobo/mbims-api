@@ -52,7 +52,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   async create(dto: CreateAssetRequestDto): Promise<AssetRequestResponseDto> {
     this.logger.log(`Creating asset request: ${JSON.stringify(dto)}`);
 
-    const request = this.repo.create();
+    const request = this.repo.create(dto);
     const savedRequest = await this.repo.save(request);
 
     const items: AssetRequestItemEntity[] = [];

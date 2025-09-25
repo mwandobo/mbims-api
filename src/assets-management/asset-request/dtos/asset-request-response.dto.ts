@@ -29,6 +29,9 @@ export class AssetRequestResponseDto {
   id: string;
 
   @Expose()
+  name: string;
+
+  @Expose()
   status: string;
 
   @Expose()
@@ -45,6 +48,7 @@ export class AssetRequestResponseDto {
     const dto = new AssetRequestResponseDto();
     dto.id = entity.id;
     dto.status = entity.status;
+    dto.name = entity.name;
     dto.createdAt = entity.createdAt;
     dto.updatedAt = entity.updatedAt;
     dto.items = entity.items?.map((item) =>
