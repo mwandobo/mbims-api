@@ -8,7 +8,6 @@ import { Role } from '../../admnistration/roles/entities/role.entity';
 import { Permission } from '../../admnistration/permissions/entities/permission.entity';
 import { ConfigService } from '@nestjs/config';
 
-
 @Injectable()
 export class AdminUserSeederService implements OnModuleInit {
   constructor(
@@ -19,7 +18,6 @@ export class AdminUserSeederService implements OnModuleInit {
     @InjectRepository(Permission)
     private readonly permissionRepository: Repository<Permission>,
     private configService: ConfigService,
-
   ) {}
 
   async onModuleInit() {
@@ -224,6 +222,48 @@ export class AdminUserSeederService implements OnModuleInit {
             name: 'compare_excel_read',
             description: 'Compare Excel for Reconcile',
           },
+        ],
+      },
+      {
+        group: 'asset_management',
+        permissions: [
+          {
+            name: 'asset_management_read',
+            description: 'View Asset Management',
+          },
+        ],
+      },
+      {
+        group: 'asset',
+        permissions: [
+          { name: 'asset_create', description: 'Create Asset' },
+          { name: 'asset_read', description: 'View Asset' },
+          { name: 'asset_update', description: 'Edit Asset' },
+          { name: 'asset_delete', description: 'Delete Asset' },
+        ],
+      },
+      {
+        group: 'asset_category',
+        permissions: [
+          {
+            name: 'asset_category_create',
+            description: 'Create Asset Category',
+          },
+          { name: 'asset_category_read', description: 'View Asset Category' },
+          { name: 'asset_category_update', description: 'Edit Asset Category' },
+          {
+            name: 'asset_category_delete',
+            description: 'Delete Asset Category',
+          },
+        ],
+      },
+      {
+        group: 'asset_request',
+        permissions: [
+          { name: 'asset_request_create', description: 'Create Asset Request' },
+          { name: 'asset_request_read', description: 'View Asset Request' },
+          { name: 'asset_request_update', description: 'Edit Asset Request' },
+          { name: 'asset_request_delete', description: 'Delete Asset Request' },
         ],
       },
     ];

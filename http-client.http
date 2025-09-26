@@ -198,7 +198,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}fetch-data/contract-files
+GET {{base_url}}fetch-data/asset-categories
 Authorization: Bearer {{token}}
 
 ###

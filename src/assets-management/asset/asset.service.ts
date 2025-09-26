@@ -1,5 +1,10 @@
 // assets/asset-request.service.ts
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { plainToInstance } from 'class-transformer';
@@ -14,6 +19,7 @@ import {
   PaginatedResponseDto,
   PaginationDto,
 } from '../../common/dtos/pagination.dto';
+import { AssetRequestItemEntity } from '../asset-request/entity/asset-request-item.entity';
 
 @Injectable()
 export class AssetService extends BaseService<AssetEntity> {
@@ -23,6 +29,9 @@ export class AssetService extends BaseService<AssetEntity> {
 
     @InjectRepository(AssetCategoryEntity)
     private readonly categoryRepository: Repository<AssetCategoryEntity>,
+
+    @InjectRepository(AssetRequestItemEntity)
+    private readonly AssetRequestItemRepository: Repository<AssetRequestItemEntity>,
   ) {
     super(repo);
   }
@@ -97,6 +106,16 @@ export class AssetService extends BaseService<AssetEntity> {
 
   // Delete
   async remove(id: string): Promise<void> {
+    const assetRequestItemsCount = await this.AssetRequestItemRepository.count({
+      where: { asset: { id } },
+    });
+
+    if (assetRequestItemsCount > 0) {
+      throw new BadRequestException(
+        'Cannot delete Asset because requests are still linked to it.',
+      );
+    }
+
     const result = await this.repo.delete(id);
 
     if (result.affected === 0) {

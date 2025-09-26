@@ -1,5 +1,9 @@
 // departments/asset-category.service.ts
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -14,12 +18,15 @@ import {
 } from './dtos/asset-category-response.dto';
 import { CreateAssetCategoryDto } from './dtos/create-asset-category.dto';
 import { UpdateAssetCategoryDto } from './dtos/update-asset-category.dto';
+import { AssetEntity } from '../asset/asset.entity';
 
 @Injectable()
 export class AssetCategoryService extends BaseService<AssetCategoryEntity> {
   constructor(
     @InjectRepository(AssetCategoryEntity)
     private readonly repo: Repository<AssetCategoryEntity>,
+    @InjectRepository(AssetEntity)
+    private readonly assetRepository: Repository<AssetEntity>,
   ) {
     super(repo);
   }
@@ -78,13 +85,28 @@ export class AssetCategoryService extends BaseService<AssetCategoryEntity> {
   }
 
   // Delete
-  async remove(id: string): Promise<void> {
-    const result = await this.repo.delete(id);
+  // async remove(id: string): Promise<void> {
+  //   const result = await this.repo.delete(id);
+  //
+  //   if (result.affected === 0) {
+  //     throw new NotFoundException(`Asset Category with ID ${id} not found`);
+  //   }
+  // }
 
-    if (result.affected === 0) {
-      throw new NotFoundException(`Asset Category with ID ${id} not found`);
+  async remove(id: string) {
+    const assetsCount = await this.assetRepository.count({
+      where: { category: { id } },
+    });
+
+    if (assetsCount > 0) {
+      throw new BadRequestException(
+        'Cannot delete category because assets are still linked to it.',
+      );
     }
+
+    return this.repo.delete(id);
   }
+
 
   // Get Statistics (example)
   async getStats(): Promise<{ count: number }> {

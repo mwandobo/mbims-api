@@ -40,4 +40,9 @@ export class FetchDataController {
   async getParties() {
     return this.dataFetchService.getParties();
   }
+
+  @Get('asset-categories')
+  async getAssetCategories() {
+    return this.dataFetchService.getAssetCategories();
+  }
 }

@@ -11,6 +11,8 @@ import { Role } from '../admnistration/roles/entities/role.entity';
 import { PartyResponseDto } from '../party/dtos/party-response.dto';
 import { Party } from '../party/entities/party.entity';
 import { DepartmentEntity } from '../admnistration/department/entities/department.entity';
+import { AssetCategoryResponseDto } from '../assets-management/asset-category/dtos/asset-category-response.dto';
+import { AssetCategoryEntity } from '../assets-management/asset-category/asset-category.entity';
 
 @Injectable()
 export class DataFetchService {
@@ -25,6 +27,8 @@ export class DataFetchService {
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(Party)
     private readonly partyRepository: Repository<Party>,
+    @InjectRepository(AssetCategoryEntity)
+    private readonly assetCategoryRepository: Repository<AssetCategoryEntity>,
   ) {}
 
   async getSuppliers(): Promise<SupplierResponseDto[]> {
@@ -55,6 +59,13 @@ export class DataFetchService {
     const response = await this.roleRepository.find();
     return response.map((client) =>
       RoleResponseDto.fromRole(client),
+    );
+  }
+
+  async getAssetCategories(): Promise<AssetCategoryResponseDto[]> {
+    const response = await this.assetCategoryRepository.find();
+    return response.map((client) =>
+      AssetCategoryResponseDto.fromAssetCategory(client),
     );
   }
 }

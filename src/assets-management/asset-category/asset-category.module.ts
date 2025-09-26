@@ -3,10 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AssetCategoryEntity } from './asset-category.entity';
 import { AssetCategoryController } from './asset-category.controller';
 import { AssetCategoryService } from './asset-category.service';
-
+import { AssetEntity } from '../asset/asset.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AssetCategoryEntity])], // must import the entity here
+  imports: [TypeOrmModule.forFeature([AssetCategoryEntity, AssetEntity])], // must import the entity here
   controllers: [AssetCategoryController],
   providers: [AssetCategoryService],
 })

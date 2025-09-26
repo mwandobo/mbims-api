@@ -8,7 +8,7 @@ import {
 import { AssetEntity } from '../asset/asset.entity';
 
 @Entity('asset_categories')
-export class AssetCategoryEntity extends BaseEntity{
+export class AssetCategoryEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -18,6 +18,9 @@ export class AssetCategoryEntity extends BaseEntity{
   @Column()
   description: string;
 
-  @OneToMany(() => AssetEntity, (asset) => asset.category)
+  @OneToMany(() => AssetEntity, (asset) => asset.category, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   assets: AssetEntity[];
 }
