@@ -8,6 +8,8 @@ import { Role } from '../admnistration/roles/entities/role.entity';
 import { Party } from '../party/entities/party.entity';
 import { DepartmentEntity } from '../admnistration/department/entities/department.entity';
 import { AssetCategoryEntity } from '../assets-management/asset-category/asset-category.entity';
+import { AssetResponseDto } from '../assets-management/asset/dtos/asset-response.dto';
+import { AssetEntity } from '../assets-management/asset/asset.entity';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { AssetCategoryEntity } from '../assets-management/asset-category/asset-c
       Role,
       Party,
       AssetCategoryEntity,
+      AssetEntity
     ]),
   ], // must import the entity here
   controllers: [FetchDataController],

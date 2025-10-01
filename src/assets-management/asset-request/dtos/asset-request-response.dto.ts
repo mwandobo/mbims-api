@@ -2,6 +2,7 @@
 import { Expose, Type } from 'class-transformer';
 import { AssetRequestEntity } from '../entity/asset-request.entity';
 import { AssetRequestItemEntity } from '../entity/asset-request-item.entity';
+import { format } from 'date-fns';
 
 class AssetRequestItemResponseDto {
   @Expose()
@@ -13,6 +14,9 @@ class AssetRequestItemResponseDto {
   @Expose()
   assetName: string;
 
+  @Expose()
+  categoryName: string;
+
   static fromEntity(
     entity: AssetRequestItemEntity,
   ): AssetRequestItemResponseDto {
@@ -20,6 +24,7 @@ class AssetRequestItemResponseDto {
     dto.id = entity.id;
     dto.quantity = entity.quantity;
     dto.assetName = entity.asset?.name ?? '';
+    dto.categoryName = entity.asset?.category?.name ?? '';
     return dto;
   }
 }
@@ -38,6 +43,12 @@ export class AssetRequestResponseDto {
   createdAt: Date;
 
   @Expose()
+  formattedCreatedAt: string;
+
+  @Expose()
+  description: string;
+
+  @Expose()
   updatedAt: Date;
 
   @Expose()
@@ -49,11 +60,17 @@ export class AssetRequestResponseDto {
     dto.id = entity.id;
     dto.status = entity.status;
     dto.name = entity.name;
+    dto.description = entity.description;
     dto.createdAt = entity.createdAt;
     dto.updatedAt = entity.updatedAt;
-    dto.items = entity.items?.map((item) =>
-      AssetRequestItemResponseDto.fromEntity(item),
-    ) ?? [];
+    dto.formattedCreatedAt = format(
+      new Date(entity.createdAt),
+      'dd/MM/yyyy',
+    );
+    dto.items =
+      entity.items?.map((item) =>
+        AssetRequestItemResponseDto.fromEntity(item),
+      ) ?? [];
     return dto;
   }
 }

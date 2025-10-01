@@ -13,6 +13,8 @@ import { Party } from '../party/entities/party.entity';
 import { DepartmentEntity } from '../admnistration/department/entities/department.entity';
 import { AssetCategoryResponseDto } from '../assets-management/asset-category/dtos/asset-category-response.dto';
 import { AssetCategoryEntity } from '../assets-management/asset-category/asset-category.entity';
+import { AssetResponseDto } from '../assets-management/asset/dtos/asset-response.dto';
+import { AssetEntity } from '../assets-management/asset/asset.entity';
 
 @Injectable()
 export class DataFetchService {
@@ -29,6 +31,8 @@ export class DataFetchService {
     private readonly partyRepository: Repository<Party>,
     @InjectRepository(AssetCategoryEntity)
     private readonly assetCategoryRepository: Repository<AssetCategoryEntity>,
+    @InjectRepository(AssetEntity)
+    private readonly assetRepository: Repository<AssetEntity>,
   ) {}
 
   async getSuppliers(): Promise<SupplierResponseDto[]> {
@@ -66,6 +70,13 @@ export class DataFetchService {
     const response = await this.assetCategoryRepository.find();
     return response.map((client) =>
       AssetCategoryResponseDto.fromAssetCategory(client),
+    );
+  }
+
+  async getAssetsByCaregory(): Promise<AssetResponseDto[]> {
+    const response = await this.assetRepository.find();
+    return response.map((client) =>
+      AssetResponseDto.fromAsset(client),
     );
   }
 }

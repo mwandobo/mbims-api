@@ -1,22 +1,5 @@
 // asset-request/dto/create-asset-request.dto.ts
-import {
-  IsUUID,
-  IsInt,
-  Min,
-  ValidateNested,
-  IsArray,
-  IsString,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-
-class CreateAssetRequestItemDto {
-  @IsUUID()
-  asset_id: string;
-
-  @IsInt()
-  @Min(1)
-  quantity: number;
-}
+import { IsUUID, IsArray, IsString } from 'class-validator';
 
 export class CreateAssetRequestDto {
   @IsString()
@@ -26,7 +9,6 @@ export class CreateAssetRequestDto {
   description: string;
 
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateAssetRequestItemDto)
-  items: CreateAssetRequestItemDto[];
+  @IsUUID("4", { each: true }) // validate each ID is UUID v4
+  asset_ids: string[];
 }

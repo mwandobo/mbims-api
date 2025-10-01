@@ -2,9 +2,10 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { AssetRequestEntity } from './asset-request.entity';
 import { AssetEntity } from '../../asset/asset.entity';
+import { BaseEntity } from '../../../common/entities/base.entity';
 
 @Entity('asset_request_items')
-export class AssetRequestItemEntity {
+export class AssetRequestItemEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -14,6 +15,6 @@ export class AssetRequestItemEntity {
   @ManyToOne(() => AssetEntity, (asset) => asset.requestItems)
   asset: AssetEntity;
 
-  @Column()
+  @Column({ nullable: true })
   quantity: number;
 }

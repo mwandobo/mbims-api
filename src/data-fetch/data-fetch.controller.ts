@@ -45,4 +45,9 @@ export class FetchDataController {
   async getAssetCategories() {
     return this.dataFetchService.getAssetCategories();
   }
+
+  @Get('assets-by-categories')
+  async getAssetsByCategories() {
+    return this.dataFetchService.getAssetsByCaregory();
+  }
 }

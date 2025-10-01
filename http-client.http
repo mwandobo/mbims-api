@@ -198,7 +198,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}fetch-data/asset-categories
+GET {{base_url}}fetch-data/assets-by-categories
 Authorization: Bearer {{token}}
 
 ###
@@ -413,20 +413,22 @@ Content-Type: application/json
 {
   "name": "Main Request",
   "description": "Main Request Description",
-  "items": [
-    {
-      "asset_id": "f9ef7f0e-e231-4aab-b178-75e704c68aa0",
-      "quantity": 5
-    },
-    {
-      "asset_id": "fb45c4f0-673c-43fb-b941-1615f195870e",
-      "quantity": 2
-    }
+  "asset_ids": [
+    "f9ef7f0e-e231-4aab-b178-75e704c68aa0",
+    "fb45c4f0-673c-43fb-b941-1615f195870e"
   ]
 }
 
 ###
-GET {{base_url}}/asset-request/2602818b-2dbf-4ae3-9b25-c5e05d4f0afd
+GET {{base_url}}/asset-requests/f515d277-03b1-4b2d-b619-6f6bd6d79090
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}/asset-requests/f515d277-03b1-4b2d-b619-6f6bd6d79090/assets
+Authorization: Bearer {{token}}
+
+###
+GET {{base_url}}/asset-requests/assets/ecc7be64-60f4-4862-bd35-ae658c79f097
 Authorization: Bearer {{token}}
 
 ###
@@ -438,4 +440,28 @@ Content-Type: application/json
   "name": "Head of Departmenttt",
   "description": "This is the sapmle party"
 }
+
+
+
+###
+GET {{base_url}}/requested-assets?requestId=f515d277-03b1-4b2d-b619-6f6bd6d79090
+Authorization: Bearer {{token}}
+
+
+
+###
+POST {{base_url}}/requested-assets?requestId=f515d277-03b1-4b2d-b619-6f6bd6d79090
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Main Request",
+  "asset_ids": [
+    "f9ef7f0e-e231-4aab-b178-75e704c68aa0",
+    "fb45c4f0-673c-43fb-b941-1615f195870e"
+  ]
+}
+
+
+
 
