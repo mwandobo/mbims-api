@@ -3,7 +3,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { User } from '../../users/entities/user.entity';
+import { User } from '../../features/users/entities/user.entity';
 import { Role } from '../../admnistration/roles/entities/role.entity';
 import { Permission } from '../../admnistration/permissions/entities/permission.entity';
 import { ConfigService } from '@nestjs/config';

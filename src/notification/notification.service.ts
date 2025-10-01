@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Notification } from './entities/notification.entity';
-import { User } from '../users/entities/user.entity';
+import { User } from '../features/users/entities/user.entity';
 
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { UpdateNotificationDto } from './dtos/update-notification.dto';

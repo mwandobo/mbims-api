@@ -2,10 +2,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CronJobService } from './cron-job.service';
-import { User } from '../../users/entities/user.entity';
-import { Contract } from '../../contracts/entities/contracts.entity';
+import { User } from '../../features/users/entities/user.entity';
+import { Contract } from '../../features/contracts/entities/contracts.entity';
 import { EmailModule } from '../mailer/email.module';
-import { SettingsModule } from '../../settings/settings.module';
+import { SettingsModule } from '../../features/settings/settings.module';
 import { NotificationModule } from '../../notification/notification.module';
 
 @Module({

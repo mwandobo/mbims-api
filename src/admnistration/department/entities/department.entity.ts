@@ -5,9 +5,9 @@ import {
   OneToMany,
 } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
-import { User } from '../../../users/entities/user.entity';
+import { User } from '../../../features/users/entities/user.entity';
 import { PositionEntity } from '../../position/entities/position.entity';
-import { Contract } from '../../../contracts/entities/contracts.entity';
+import { Contract } from '../../../features/contracts/entities/contracts.entity';
 
 @Entity('departments')
 export class DepartmentEntity extends BaseEntity{
