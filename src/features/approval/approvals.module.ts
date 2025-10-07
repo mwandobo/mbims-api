@@ -15,6 +15,7 @@ import { User } from '../users/entities/user.entity';
 import { ApprovalActionService } from './service/approval-action.service';
 import { ApprovalActionController } from './controller/approval-action.controller';
 import { ApprovalAction } from './entities/approval-action.entity';
+import { ApprovalStatusUtil } from './utils/approval-status.util';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { ApprovalAction } from './entities/approval-action.entity';
     SysApprovalSeederService,
     UserApprovalService,
     ApprovalLevelService,
-    ApprovalActionService
+    ApprovalActionService,
+    ApprovalStatusUtil
   ],
   exports: [SysApprovalService],
 })
