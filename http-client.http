@@ -510,3 +510,21 @@ Content-Type: application/json
   "roleId": "c02d9613-31dc-462d-b43a-c539d5b8bd9e",
   "status": "pending"
 }
+
+###
+GET {{base_url}}/approval-actions
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/approval-actions
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Finance Invoice Approval",
+  "action": "APPROVED",
+  "entityName": "Invoice",
+  "entityId": "a1b2c3d4-e5f6-7890-ab12-cd34ef567890",
+  "description": "Approve invoice #INV-2025-01 for payment",
+  "approvalLevelId": "4d0dc8f2-9f58-4c20-8570-6610457bfa00"
+}
