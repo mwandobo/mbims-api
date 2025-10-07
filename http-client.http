@@ -462,11 +462,9 @@ Content-Type: application/json
   ]
 }
 
-
 ###
 GET {{base_url}}/sys-approvals
 Authorization: Bearer {{token}}
-
 
 
 ###
@@ -482,4 +480,33 @@ Content-Type: application/json
   "sysApprovalId": "4b737563-518b-4048-8b51-f083c0a78c1a",
   "name": "Testing Approval",
   "description": "Testing Approval"
+}
+
+###
+GET {{base_url}}/approval-levels
+Authorization: Bearer {{token}}
+
+####
+#POST {{base_url}}/approval-levels
+#Authorization: Bearer {{token}}
+#Content-Type: application/json
+#
+#{
+#  "sysApprovalId": "4b737563-518b-4048-8b51-f083c0a78c1a",
+#  "name": "Testing Approval",
+#  "description": "Testing Approval"
+#}
+
+###
+POST {{base_url}}/approval-levels
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Testing Approval Level 1",
+  "description": "Handles testing approval workflow for finance department",
+  "level": "LEVEL_1",
+  "userApprovalId": "2c1d84d0-9907-49ce-83b4-014b7731bbc4",
+  "roleId": "c02d9613-31dc-462d-b43a-c539d5b8bd9e",
+  "status": "pending"
 }
