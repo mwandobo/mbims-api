@@ -463,5 +463,23 @@ Content-Type: application/json
 }
 
 
+###
+GET {{base_url}}/sys-approvals
+Authorization: Bearer {{token}}
 
 
+
+###
+GET {{base_url}}/user-approvals
+Authorization: Bearer {{token}}
+
+###
+POST {{base_url}}/user-approvals
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "sysApprovalId": "4b737563-518b-4048-8b51-f083c0a78c1a",
+  "name": "Testing Approval",
+  "description": "Testing Approval"
+}

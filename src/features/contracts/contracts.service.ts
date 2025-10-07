@@ -45,7 +45,6 @@ export class ContractsService extends BaseService<Contract> {
     const response = await this.findAllPaginated(
       pagination,
       ['party', 'department'], // relations
-
       {
         fields: ['title', 'group'], // fields in contracts table
         relations: {

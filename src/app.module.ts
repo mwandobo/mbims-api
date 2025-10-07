@@ -14,8 +14,6 @@ import { CommonModule } from './common/common.module';
 import { JwtAuthGuard } from './features/auth/guards/auth.guard';
 import { ContractsModule } from './features/contracts/contracts.module';
 import { DashboardModule } from './features/dashboard/dashboard.module';
-import { ClientModule } from './features/clients/client.module';
-import { SupplierModule } from './features/suppliers/supplier.module';
 import { LicencesModule } from './features/lincence/licences.module';
 import { SubContractsModule } from './features/sub-contracts/sub-contracts.module';
 import { FetchDataModule } from './features/data-fetch/fetch-data.module';
@@ -32,6 +30,7 @@ import { PositionModule } from './admnistration/position/position.module';
 import { AssetCategoryModule } from './features/assets-management/asset-category/asset-category.module';
 import { AssetModule } from './features/assets-management/asset/asset.module';
 import { AssetRequestModule } from './features/assets-management/asset-request/asset-request.module';
+import { ApprovalsModule } from './features/approval/approvals.module';
 
 @Module({
   imports: [
@@ -64,7 +63,8 @@ import { AssetRequestModule } from './features/assets-management/asset-request/a
     PositionModule,
     AssetCategoryModule,
     AssetModule,
-    AssetRequestModule
+    AssetRequestModule,
+    ApprovalsModule
   ],
   controllers: [AppController],
   providers: [
