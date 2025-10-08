@@ -15,41 +15,6 @@ export class SysApprovalSeederService implements OnModuleInit {
     await this.seedSysApprovals();
   }
 
-  // private async seedSysApprovals(): Promise<void> {
-  //   const approvals = [
-  //     { name: 'Finance Approval', description: 'Handles financial approvals' },
-  //     {
-  //       name: 'Procurement Approval',
-  //       description: 'Handles procurement processes',
-  //     },
-  //     { name: 'HR Approval', description: 'Handles HR-related approvals' },
-  //     {
-  //       name: 'Admin Approval',
-  //       description: 'Handles administrative approvals',
-  //     },
-  //     {
-  //       name: 'ICT Approval',
-  //       description: 'Handles IT and systems-related approvals',
-  //     },
-  //   ];
-  //
-  //   for (const approval of approvals) {
-  //     const existing = await this.sysApprovalRepository.findOne({
-  //       where: { name: approval.name },
-  //     });
-  //
-  //     if (!existing) {
-  //       await this.sysApprovalRepository.save(
-  //         this.sysApprovalRepository.create(approval),
-  //       );
-  //       console.log(`✅ Added new system approval: ${approval.name}`);
-  //     } else {
-  //       console.log(`ℹ️ Approval already exists: ${approval.name}`);
-  //     }
-  //   }
-  //
-  //   console.log('🎉 SysApproval seeding completed.');
-  // }
 
   private async seedSysApprovals(): Promise<void> {
     const approvals = [
@@ -57,6 +22,11 @@ export class SysApprovalSeederService implements OnModuleInit {
         name: 'User Approval',
         description: 'Handles User approvals',
         entityName: 'User',
+      },
+      {
+        name: 'Department Approval',
+        description: 'Handles User approvals',
+        entityName: 'Department',
       },
     ];
 

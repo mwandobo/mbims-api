@@ -17,6 +17,9 @@ export class DepartmentResponseDto {
   status: string;
 
   @Expose()
+  approvalStatus: string;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()
@@ -27,6 +30,7 @@ export class DepartmentResponseDto {
     dto.id = department.id;
     dto.name = department.name;
     dto.description = department.description;
+    dto.approvalStatus = "";
     return dto;
   }
 }

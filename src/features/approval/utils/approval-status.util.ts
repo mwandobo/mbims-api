@@ -189,8 +189,9 @@ export class ApprovalStatusUtil {
     }
 
     const levels = await this.approvalLevelRepository.find({
-      where: { userApproval },
+      where: { userApproval: { id: userApproval.id } },
     });
+
     if (levels.length === 0) {
       entityIds.forEach((id) => (statuses[id] = 'PENDING'));
       return statuses;

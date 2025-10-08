@@ -13,14 +13,17 @@ import {
 } from '../../common/dtos/pagination.dto';
 import { BaseService } from '../../common/services/base-service';
 import { DepartmentEntity } from './entities/department.entity';
+import { ApprovalStatusUtil } from '../../features/approval/utils/approval-status.util';
+import { UserResponseDto } from '../../features/users/dtos/user-response.dto';
 
 @Injectable()
 export class DepartmentService extends BaseService<DepartmentEntity> {
   constructor(
     @InjectRepository(DepartmentEntity)
     private readonly departmentRepository: Repository<DepartmentEntity>,
+    approvalStatusUtil: ApprovalStatusUtil
   ) {
-    super(departmentRepository);
+    super(departmentRepository, approvalStatusUtil, 'Department');
   }
 
   async findAll(
@@ -34,12 +37,26 @@ export class DepartmentService extends BaseService<DepartmentEntity> {
       },
     );
 
+    // return {
+    //   ...response,
+    //   data: response.data.map((department) =>
+    //     DepartmentResponseDto.fromDepartment(department),
+    //   ),
+    // };
+
+
     return {
       ...response,
-      data: response.data.map((department) =>
-        DepartmentResponseDto.fromDepartment(department),
-      ),
+      data: response.data.map((user) => {
+        const dto = DepartmentResponseDto.fromDepartment(user);
+        dto.approvalStatus = (user as any).approvalStatus ?? 'N/A';
+        return dto;
+      }),
     };
+
+
+
+
   }
 
   // Create

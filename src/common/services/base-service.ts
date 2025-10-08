@@ -92,7 +92,6 @@ export abstract class BaseService<T> {
     }
 
     // 🧠 Check approval mode once per entity type
-    const entityName = this.repository.metadata.name;
     const hasApprovalMode =
       this.approvalSlug &&
       (await this.approvalStatusUtil.hasApprovalMode(this.approvalSlug));
@@ -114,7 +113,7 @@ export abstract class BaseService<T> {
     const entityIds = data.map((entity: any) => entity.id);
     const approvalStatuses =
       await this.approvalStatusUtil.getBulkApprovalStatuses(
-        entityName,
+        this.approvalSlug,
         entityIds,
       );
 
