@@ -30,7 +30,7 @@ export class UsersService extends BaseService<User> {
     private readonly departmentRepository: Repository<DepartmentEntity>,
     approvalStatusUtil: ApprovalStatusUtil, // <--- inject it here
   ) {
-    super(usersRepository, approvalStatusUtil);
+    super(usersRepository, approvalStatusUtil, 'User');
   }
 
   async findAll(

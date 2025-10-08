@@ -477,25 +477,14 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "sysApprovalId": "4b737563-518b-4048-8b51-f083c0a78c1a",
-  "name": "Testing Approval",
-  "description": "Testing Approval"
+  "sysApprovalId": "5b113acb-046b-4e55-9045-6c814bfc21bb",
+  "name": "User Approval",
+  "description": "User Approval"
 }
 
 ###
 GET {{base_url}}/approval-levels
 Authorization: Bearer {{token}}
-
-####
-#POST {{base_url}}/approval-levels
-#Authorization: Bearer {{token}}
-#Content-Type: application/json
-#
-#{
-#  "sysApprovalId": "4b737563-518b-4048-8b51-f083c0a78c1a",
-#  "name": "Testing Approval",
-#  "description": "Testing Approval"
-#}
 
 ###
 POST {{base_url}}/approval-levels
@@ -506,7 +495,7 @@ Content-Type: application/json
   "name": "Testing Approval Level 1",
   "description": "Handles testing approval workflow for finance department",
   "level": "LEVEL_1",
-  "userApprovalId": "2c1d84d0-9907-49ce-83b4-014b7731bbc4",
+  "userApprovalId": "fa533d4e-b811-451d-85d6-41655ea1e342",
   "roleId": "c02d9613-31dc-462d-b43a-c539d5b8bd9e",
   "status": "pending"
 }
@@ -521,10 +510,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Finance Invoice Approval",
+  "name": "User Approval",
   "action": "APPROVED",
-  "entityName": "Invoice",
-  "entityId": "a1b2c3d4-e5f6-7890-ab12-cd34ef567890",
-  "description": "Approve invoice #INV-2025-01 for payment",
-  "approvalLevelId": "4d0dc8f2-9f58-4c20-8570-6610457bfa00"
+  "entityName": "Legal System",
+  "entityId": "ed04d036-8cc5-43c2-b2d0-777eb68ca684",
+  "description": "Approve User #INV-2025-01 for payment",
+  "approvalLevelId": "bef11a30-a00f-4be0-a18b-f385f25ce263"
 }

@@ -6,6 +6,7 @@ export abstract class BaseService<T> {
   constructor(
     protected repository: Repository<T>,
     private readonly approvalStatusUtil?: ApprovalStatusUtil, // optional DI
+    private readonly approvalSlug?: string,
   ) {}
 
   async findAllPaginated(
@@ -93,7 +94,8 @@ export abstract class BaseService<T> {
     // 🧠 Check approval mode once per entity type
     const entityName = this.repository.metadata.name;
     const hasApprovalMode =
-      await this.approvalStatusUtil.hasApprovalMode(entityName);
+      this.approvalSlug &&
+      (await this.approvalStatusUtil.hasApprovalMode(this.approvalSlug));
 
     if (!hasApprovalMode) {
       const dataWithNA = data.map((entity: any) => ({

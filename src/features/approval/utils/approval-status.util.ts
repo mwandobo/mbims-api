@@ -49,7 +49,7 @@ export class ApprovalStatusUtil {
     }
 
     const levels = await this.approvalLevelRepository.find({
-      where: { userApproval },
+      where: { userApproval: { id: userApproval.id } },
     });
     this.logger.debug(
       `${levels.length} approval levels found for entity ${entityName}`,
