@@ -31,6 +31,9 @@ export class UserResponseDto {
   departmentName: string;
 
   @Expose()
+  approvalStatus: string;
+
+  @Expose()
   roleName: string;
 
   static fromUser(user: User): UserResponseDto {
@@ -44,6 +47,7 @@ export class UserResponseDto {
     dto.department_id = (user.department as any)?.id || '';
     dto.departmentName = user.department?.name || '';
     dto.roleName = user.role?.name || '';
+    dto.approvalStatus = ''; // or your computed logic
     return dto;
   }
 }

@@ -36,7 +36,7 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     const useLdap = this.configService.get('USE_LDAP_AUTH') === 'true';
 
-    console.log('use ldap auth', useLdap);
+    // console.log('use ldap auth', useLdap);
 
     if (useLdap) {
       try {
@@ -70,7 +70,7 @@ export class AuthService {
 
     let savedUser = await this.usersService.findForAuth(ldapUser.email);
 
-    console.log('saved user', savedUser);
+    // console.log('saved user', savedUser);
     if (!savedUser) {
       const userPayload = {
         name: ldapUser.displayName,

@@ -42,6 +42,14 @@ import { ApprovalStatusUtil } from './utils/approval-status.util';
     ApprovalActionService,
     ApprovalStatusUtil
   ],
-  exports: [SysApprovalService],
+  exports: [
+    SysApprovalService,
+    SysApprovalSeederService,
+    UserApprovalService,
+    ApprovalLevelService,
+    ApprovalActionService,
+    ApprovalStatusUtil
+  ],
+  // exports: [SysApprovalService],
 })
 export class ApprovalsModule {}

@@ -17,6 +17,7 @@ import {
 } from '../../../common/dtos/pagination.dto';
 import { BaseService } from '../../../common/services/base-service';
 import { DepartmentEntity } from '../../../admnistration/department/entities/department.entity';
+import { ApprovalStatusUtil } from '../../approval/utils/approval-status.util';
 
 @Injectable()
 export class UsersService extends BaseService<User> {
@@ -27,8 +28,9 @@ export class UsersService extends BaseService<User> {
     private readonly roleRepository: Repository<Role>,
     @InjectRepository(DepartmentEntity)
     private readonly departmentRepository: Repository<DepartmentEntity>,
+    approvalStatusUtil: ApprovalStatusUtil, // <--- inject it here
   ) {
-    super(usersRepository);
+    super(usersRepository, approvalStatusUtil);
   }
 
   async findAll(
@@ -48,7 +50,11 @@ export class UsersService extends BaseService<User> {
 
     return {
       ...response,
-      data: response.data.map((user) => UserResponseDto.fromUser(user)),
+      data: response.data.map((user) => {
+        const dto = UserResponseDto.fromUser(user);
+        dto.approvalStatus = (user as any).approvalStatus ?? 'N/A';
+        return dto;
+      }),
     };
   }
 

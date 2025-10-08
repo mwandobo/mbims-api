@@ -13,8 +13,14 @@ export class PaginatedResponseDto<T> {
     limit: number;
     totalPages: number;
   };
+  hasApprovalMode?: boolean; // ✅ new property
 
-  constructor(data: T[], total: number, pagination: PaginationDto) {
+  constructor(
+    data: T[],
+    total: number,
+    pagination: PaginationDto,
+    hasApprovalMode?: boolean,
+  ) {
     this.data = data;
     this.pagination = {
       total,
@@ -22,5 +28,6 @@ export class PaginatedResponseDto<T> {
       limit: pagination.limit,
       totalPages: Math.ceil(total / pagination.limit),
     };
+    this.hasApprovalMode = hasApprovalMode;
   }
 }
