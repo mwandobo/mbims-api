@@ -49,3 +49,17 @@ for example for department service
     };
   Thats it(3 minutes Tops)
 
+IN FINDONE METHOD 
+
+you just have ro call a attachApprovalInfo method from baserService
+
+then pass entity and approval entityName
+
+```
+    const departmentWithStatus = await this.attachApprovalInfo(
+      department,
+      'Department',
+    );
+```
+
+

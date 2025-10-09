@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -65,7 +69,9 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       where: { approvalLevel: { id: dto.approvalLevelId } },
     });
     if (existing)
-      throw new Error('Approval Action has been done for this Level');
+      throw new BadRequestException(
+        'Approval Action has been done for this Level',
+      );
 
     const approvalLevel = await this.approvalLevelRepository.findOne({
       where: { id: dto.approvalLevelId },

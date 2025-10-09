@@ -129,4 +129,21 @@ export abstract class BaseService<T> {
       hasApprovalMode,
     );
   }
+
+  protected async attachApprovalInfo<T extends { id: string }>(
+    entity: T,
+    entityName: string,
+  ): Promise<T & { hasApprovalMode: boolean; approvalStatus: string }> {
+    if (!this.approvalStatusUtil) {
+      return { ...entity, hasApprovalMode: false, approvalStatus: 'N/A' };
+    }
+
+    const [hasApprovalMode, approvalStatus] = await Promise.all([
+      this.approvalStatusUtil.hasApprovalMode(entityName),
+      this.approvalStatusUtil.getApprovalStatus(entityName, entity.id),
+    ]);
+
+    return { ...entity, hasApprovalMode, approvalStatus };
+  }
+
 }

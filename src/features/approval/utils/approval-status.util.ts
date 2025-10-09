@@ -81,9 +81,15 @@ export class ApprovalStatusUtil {
       return 'PENDING';
     }
 
+    // const levels = await this.approvalLevelRepository.find({
+    //   where: { userApproval },
+    // });
+
     const levels = await this.approvalLevelRepository.find({
-      where: { userApproval },
+      where: { userApproval: { id: userApproval.id } },
     });
+
+
     this.logger.debug(
       `Found ${levels.length} approval levels for entity ${entityName}`,
     );

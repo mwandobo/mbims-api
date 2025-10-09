@@ -89,7 +89,7 @@ GET {{base_url}}departments
 Authorization: Bearer {{token}}
 
 ###
-GET {{base_url}}departments
+GET {{base_url}}departments/06cfccc5-5301-440a-8d30-2ebb37195cf8
 Authorization: Bearer {{token}}
 
 ###
@@ -477,9 +477,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "sysApprovalId": "5b113acb-046b-4e55-9045-6c814bfc21bb",
-  "name": "User Approval",
-  "description": "User Approval"
+  "sysApprovalId": "dd7ee7ea-7eaa-4684-9f8c-ba5b6b8efc1f",
+  "name": "Department Approval",
+  "description": "Department Approval"
 }
 
 ###
@@ -492,10 +492,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Testing Approval Level 1",
+  "name": " Approval Level 1",
   "description": "Handles testing approval workflow for finance department",
   "level": "LEVEL_1",
-  "userApprovalId": "fa533d4e-b811-451d-85d6-41655ea1e342",
+  "userApprovalId": "70859288-4b02-4946-9cd9-77cc3769adc6",
   "roleId": "c02d9613-31dc-462d-b43a-c539d5b8bd9e",
   "status": "pending"
 }
@@ -510,10 +510,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "User Approval",
+  "name": "Department Approvala",
   "action": "APPROVED",
-  "entityName": "Legal System",
-  "entityId": "ed04d036-8cc5-43c2-b2d0-777eb68ca684",
-  "description": "Approve User #INV-2025-01 for payment",
-  "approvalLevelId": "bef11a30-a00f-4be0-a18b-f385f25ce263"
+  "entityName": "Department",
+  "entityId": "06cfccc5-5301-440a-8d30-2ebb37195cf8",
+  "description": "Approve Department #INV-2025-01 for payment",
+  "approvalLevelId": "8f9b4169-e117-4483-a2b4-cb83847808df"
 }

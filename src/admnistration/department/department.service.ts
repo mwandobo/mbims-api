@@ -21,7 +21,7 @@ export class DepartmentService extends BaseService<DepartmentEntity> {
   constructor(
     @InjectRepository(DepartmentEntity)
     private readonly departmentRepository: Repository<DepartmentEntity>,
-    approvalStatusUtil: ApprovalStatusUtil
+    approvalStatusUtil: ApprovalStatusUtil,
   ) {
     super(departmentRepository, approvalStatusUtil, 'Department');
   }
@@ -44,7 +44,6 @@ export class DepartmentService extends BaseService<DepartmentEntity> {
     //   ),
     // };
 
-
     return {
       ...response,
       data: response.data.map((user) => {
@@ -53,10 +52,6 @@ export class DepartmentService extends BaseService<DepartmentEntity> {
         return dto;
       }),
     };
-
-
-
-
   }
 
   // Create
@@ -78,7 +73,12 @@ export class DepartmentService extends BaseService<DepartmentEntity> {
       throw new NotFoundException(`Department with ID ${id} not found`);
     }
 
-    return plainToInstance(DepartmentResponseDto, department);
+    // const department = await this.departmentRepository.findOne({ where: { id } });
+    const departmentWithStatus = await this.attachApprovalInfo(
+      department,
+      'Department',
+    );
+    return plainToInstance(DepartmentResponseDto, departmentWithStatus);
   }
 
   // Update
