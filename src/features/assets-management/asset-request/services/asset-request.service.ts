@@ -13,6 +13,9 @@ import {
 import { AssetEntity } from '../../asset/asset.entity';
 import { AssetRequestResponseDto } from '../dtos/asset-request-response.dto';
 import { CreateAssetRequestDto } from '../dtos/create-asset-request.dto';
+import { ApprovalStatusUtil } from '../../../approval/utils/approval-status.util';
+import { plainToInstance } from 'class-transformer';
+import { DepartmentResponseDto } from '../../../../admnistration/department/dtos/department-response.dto';
 
 @Injectable()
 export class AssetRequestService extends BaseService<AssetRequestEntity> {
@@ -27,8 +30,10 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
 
     @InjectRepository(AssetEntity)
     private readonly assetRepo: Repository<AssetEntity>,
+
+    approvalStatusUtil: ApprovalStatusUtil,
   ) {
-    super(repo);
+    super(repo, approvalStatusUtil, 'AssetRequest');
   }
 
   // Find all requests with pagination
@@ -43,8 +48,14 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
 
     return {
       ...response,
-      data: response.data.map((req) => AssetRequestResponseDto.fromEntity(req)),
+      data: response.data.map((user) => {
+        const dto = AssetRequestResponseDto.fromEntity(user);
+        dto.approvalStatus = (user as any).approvalStatus ?? 'N/A';
+        return dto;
+      }),
     };
+
+
   }
 
   async create(dto: CreateAssetRequestDto): Promise<AssetRequestResponseDto> {
@@ -88,7 +99,14 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
       throw new NotFoundException(`Asset request with ID ${id} not found`);
     }
 
-    return AssetRequestResponseDto.fromEntity(request);
+    const requestWithStatus = await this.attachApprovalInfo(
+      request,
+      'AssetRequest',
+    );
+
+    // return AssetRequestResponseDto.fromEntity(requestWithStatus);
+    return plainToInstance(AssetRequestResponseDto, requestWithStatus);
+
   }
 
   // Update a request (replace items)

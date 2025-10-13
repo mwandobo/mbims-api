@@ -31,14 +31,7 @@ LAstly you just have to edit a place where u want to retrieve that approvalStatu
 
 for example for department service
 
-    // return {
-    //   ...response,
-    //   data: response.data.map((department) =>
-    //     DepartmentResponseDto.fromDepartment(department),
-    //   ),
-    // };
-
-
+```
     return {
       ...response,
       data: response.data.map((user) => {
@@ -47,11 +40,13 @@ for example for department service
         return dto;
       }),
     };
+    
+```
   Thats it(3 minutes Tops)
 
 IN FINDONE METHOD 
 
-you just have ro call a attachApprovalInfo method from baserService
+you just have to call a attachApprovalInfo method from baserService
 
 then pass entity and approval entityName
 
@@ -63,3 +58,6 @@ then pass entity and approval entityName
 ```
 
 
+then pass the the response to plain
+
+    return plainToInstance(AssetRequestResponseDto, requestWithStatus);

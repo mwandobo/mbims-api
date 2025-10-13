@@ -7,6 +7,7 @@ import { AssetRequestItemEntity } from './entity/asset-request-item.entity';
 import { AssetEntity } from '../asset/asset.entity';
 import { RequestedAssetsController } from './controllers/asset-request-item.controller';
 import { RequestedAssetsService } from './services/requested-assets.service';
+import { ApprovalsModule } from '../../approval/approvals.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RequestedAssetsService } from './services/requested-assets.service';
       AssetEntity,
       AssetRequestItemEntity,
     ]),
+    ApprovalsModule
   ], // must import the entity here
   controllers: [AssetRequestController, RequestedAssetsController],
   providers: [AssetRequestService, RequestedAssetsService],

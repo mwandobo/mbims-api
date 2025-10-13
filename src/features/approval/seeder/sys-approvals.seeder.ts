@@ -28,6 +28,11 @@ export class SysApprovalSeederService implements OnModuleInit {
         description: 'Handles User approvals',
         entityName: 'Department',
       },
+      {
+        name: 'Asset Request Approval',
+        description: 'Handles Asset Requests approvals',
+        entityName: 'AssetRequest',
+      },
     ];
 
     for (const approval of approvals) {

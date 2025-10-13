@@ -420,7 +420,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}/asset-requests/f515d277-03b1-4b2d-b619-6f6bd6d79090
+GET {{base_url}}/asset-requests/40ff9bd1-ae41-4138-9483-764014cd2f7d
 Authorization: Bearer {{token}}
 
 ###
@@ -477,9 +477,9 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "sysApprovalId": "dd7ee7ea-7eaa-4684-9f8c-ba5b6b8efc1f",
-  "name": "Department Approval",
-  "description": "Department Approval"
+  "sysApprovalId": "e20544af-230a-4f37-aa5c-8a016ca688eb",
+  "name": "Asset Request Approval",
+  "description": "Asset Request Approval"
 }
 
 ###
@@ -492,10 +492,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": " Approval Level 1",
-  "description": "Handles testing approval workflow for finance department",
-  "level": "LEVEL_1",
-  "userApprovalId": "70859288-4b02-4946-9cd9-77cc3769adc6",
+  "name": " Approval",
+  "description": "Handles testing approval workflow for Asset Request",
+  "level": "LEVEL_2",
+  "userApprovalId": "2a5cdad9-a0bc-451d-8bb1-030bec18d748",
   "roleId": "c02d9613-31dc-462d-b43a-c539d5b8bd9e",
   "status": "pending"
 }
@@ -510,10 +510,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Department Approvala",
+  "name": "Asset Management",
   "action": "APPROVED",
-  "entityName": "Department",
-  "entityId": "06cfccc5-5301-440a-8d30-2ebb37195cf8",
+  "entityName": "AssetRequest",
+  "entityId": "40ff9bd1-ae41-4138-9483-764014cd2f7d",
   "description": "Approve Department #INV-2025-01 for payment",
-  "approvalLevelId": "8f9b4169-e117-4483-a2b4-cb83847808df"
+  "approvalLevelId": "64903d11-83dc-47d4-a0d5-a508234aac79"
 }
