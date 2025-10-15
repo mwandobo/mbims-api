@@ -19,7 +19,7 @@ export class ApprovalAction extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   name: string;
 
   @Column({
@@ -33,7 +33,7 @@ export class ApprovalAction extends BaseEntity {
   @Column({ nullable: true })
   entityName: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: false })
   entityId: string;
 
   @Column({ nullable: true })

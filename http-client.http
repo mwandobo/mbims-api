@@ -506,9 +506,7 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Asset Managementa",
   "action": "APPROVED",
-  "entityName": "AssetRequest",
   "entityId": "f515d277-03b1-4b2d-b619-6f6bd6d79090",
   "description": "Approve Department #INV-2025-01 for payment",
   "approvalLevelId": "64903d11-83dc-47d4-a0d5-a508234aac79"
