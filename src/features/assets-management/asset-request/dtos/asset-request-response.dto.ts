@@ -49,9 +49,6 @@ export class AssetRequestResponseDto {
   description: string;
 
   @Expose()
-  approvalStatus: string;
-
-  @Expose()
   updatedAt: Date;
 
   @Expose()
@@ -64,7 +61,6 @@ export class AssetRequestResponseDto {
     dto.status = entity.status;
     dto.name = entity.name;
     dto.description = entity.description;
-    dto.approvalStatus = "";
     dto.createdAt = entity.createdAt;
     dto.updatedAt = entity.updatedAt;
     dto.formattedCreatedAt = format(

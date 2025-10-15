@@ -368,8 +368,6 @@ Content-Type: application/json
   "description": "This is the sapmle party"
 }
 
-
-
 ###
 GET {{base_url}}/assets
 Authorization: Bearer {{token}}
@@ -420,7 +418,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}/asset-requests/40ff9bd1-ae41-4138-9483-764014cd2f7d
+GET {{base_url}}/asset-requests/f515d277-03b1-4b2d-b619-6f6bd6d79090?roleId=c02d9613-31dc-462d-b43a-c539d5b8bd9e
 Authorization: Bearer {{token}}
 
 ###
@@ -442,11 +440,9 @@ Content-Type: application/json
 }
 
 
-
 ###
 GET {{base_url}}/requested-assets?requestId=f515d277-03b1-4b2d-b619-6f6bd6d79090
 Authorization: Bearer {{token}}
-
 
 
 ###
@@ -510,10 +506,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Asset Management",
+  "name": "Asset Managementa",
   "action": "APPROVED",
   "entityName": "AssetRequest",
-  "entityId": "40ff9bd1-ae41-4138-9483-764014cd2f7d",
+  "entityId": "f515d277-03b1-4b2d-b619-6f6bd6d79090",
   "description": "Approve Department #INV-2025-01 for payment",
   "approvalLevelId": "64903d11-83dc-47d4-a0d5-a508234aac79"
 }

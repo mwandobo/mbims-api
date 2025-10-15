@@ -64,19 +64,26 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     dto: CreateApprovalActionDto,
     currentUserId: string,
   ): Promise<ApprovalAction> {
-    // Check duplicate
-    const existing = await this.approvalActionRepository.findOne({
-      where: { approvalLevel: { id: dto.approvalLevelId } },
-    });
-    if (existing)
-      throw new BadRequestException(
-        'Approval Action has been done for this Level',
-      );
 
     const approvalLevel = await this.approvalLevelRepository.findOne({
       where: { id: dto.approvalLevelId },
     });
     if (!approvalLevel) throw new NotFoundException('Approval Level not found');
+
+    console.log('entityid', dto.entityId)
+    console.log('levelid', dto.approvalLevelId)
+
+    // Check duplicate
+    const existing = await this.approvalActionRepository.findOne({
+      where: {
+        approvalLevel: { id: dto.approvalLevelId },
+        entityId: dto.entityId
+      },
+    });
+    if (existing)
+      throw new BadRequestException(
+        'Approval Action has been done for this level and entity',
+      );
 
     const user = await this.userRepository.findOne({
       where: { id: currentUserId },

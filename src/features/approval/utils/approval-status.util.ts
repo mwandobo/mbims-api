@@ -81,9 +81,6 @@ export class ApprovalStatusUtil {
       return 'PENDING';
     }
 
-    // const levels = await this.approvalLevelRepository.find({
-    //   where: { userApproval },
-    // });
 
     const levels = await this.approvalLevelRepository.find({
       where: { userApproval: { id: userApproval.id } },
@@ -180,7 +177,6 @@ export class ApprovalStatusUtil {
     return userApproval;
   }
 
-
   async getBulkApprovalStatuses(
     entityName: string,
     entityIds: string[],
@@ -249,5 +245,27 @@ export class ApprovalStatusUtil {
 
     return statuses;
   }
+
+  async getUserApprovall(entityName: string) {
+    const sys = await this.sysApprovalRepository.findOne({ where: { entityName } });
+    if (!sys) return null;
+    return this.userApprovalRepository.findOne({
+      where: { sysApproval: { id: sys.id } },
+    });
+  }
+
+  async getLevelsByUserApproval(userApprovalId: string) {
+    return this.approvalLevelRepository.find({
+      where: { userApproval: { id: userApprovalId } },
+    });
+  }
+
+  async getActions(entityName: string, entityId: string) {
+    return this.approvalActionRepository.find({
+      where: { entityName, entityId },
+      relations: ['approvalLevel'],
+    });
+  }
+
 
 }

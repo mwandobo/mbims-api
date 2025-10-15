@@ -19,7 +19,7 @@ export class ApprovalAction extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true, nullable: false })
+  @Column({ nullable: false })
   name: string;
 
   @Column({
@@ -42,7 +42,7 @@ export class ApprovalAction extends BaseEntity {
   @Column({ nullable: true })
   description: string;
 
-  @OneToOne(() => ApprovalLevel, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => ApprovalLevel, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'approval_level_id' })
   approvalLevel: ApprovalLevel;
 

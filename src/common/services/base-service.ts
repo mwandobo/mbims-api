@@ -130,20 +130,132 @@ export abstract class BaseService<T> {
     );
   }
 
+  // protected async attachApprovalInfo<T extends { id: string }>(
+  //   entity: T,
+  //   entityName: string,
+  // ): Promise<T & { hasApprovalMode: boolean; approvalStatus: string }> {
+  //   if (!this.approvalStatusUtil) {
+  //     return { ...entity, hasApprovalMode: false, approvalStatus: 'N/A' };
+  //   }
+  //
+  //   const [hasApprovalMode, approvalStatus] = await Promise.all([
+  //     this.approvalStatusUtil.hasApprovalMode(entityName),
+  //     this.approvalStatusUtil.getApprovalStatus(entityName, entity.id),
+  //   ]);
+  //
+  //   return { ...entity, hasApprovalMode, approvalStatus };
+  // }
+
   protected async attachApprovalInfo<T extends { id: string }>(
     entity: T,
     entityName: string,
-  ): Promise<T & { hasApprovalMode: boolean; approvalStatus: string }> {
+    userRoleId?: string, // 👈 pass the logged-in user’s roleId here
+  ): Promise<
+    T & {
+      hasApprovalMode: boolean;
+      approvalStatus: string;
+      isMyLevelApproved: boolean;
+      shouldApprove: boolean;
+    }
+  > {
     if (!this.approvalStatusUtil) {
-      return { ...entity, hasApprovalMode: false, approvalStatus: 'N/A' };
+      return {
+        ...entity,
+        hasApprovalMode: false,
+        approvalStatus: 'N/A',
+        isMyLevelApproved: false,
+        shouldApprove: false,
+      };
     }
 
+    // 🧠 Load all needed data in parallel
     const [hasApprovalMode, approvalStatus] = await Promise.all([
       this.approvalStatusUtil.hasApprovalMode(entityName),
       this.approvalStatusUtil.getApprovalStatus(entityName, entity.id),
     ]);
 
-    return { ...entity, hasApprovalMode, approvalStatus };
-  }
+    if (!hasApprovalMode || approvalStatus === 'REJECTED') {
+      return {
+        ...entity,
+        hasApprovalMode,
+        approvalStatus,
+        isMyLevelApproved: false,
+        shouldApprove: false,
+      };
+    }
 
+    // 🧩 Fetch approval details for logic below
+    const userApproval =
+      await this.approvalStatusUtil.getUserApprovall(entityName);
+    if (!userApproval) {
+      return {
+        ...entity,
+        hasApprovalMode,
+        approvalStatus,
+        isMyLevelApproved: false,
+        shouldApprove: false,
+      };
+    }
+
+    const levels = await this.approvalStatusUtil.getLevelsByUserApproval(
+      userApproval.id,
+    );
+    const actions = await this.approvalStatusUtil.getActions(
+      entityName,
+      entity.id,
+    );
+
+    // 🔍 Determine if the user’s level is approved
+    let isMyLevelApproved = false;
+    let shouldApprove = false;
+
+    const myLevel = levels.find((level) => level.role.id === userRoleId);
+
+    if (myLevel) {
+      const myActions = actions.filter(
+        (a) => a.approvalLevel.id === myLevel.id,
+      );
+      isMyLevelApproved = myActions.some((a) => a.action === 'APPROVED');
+    }
+
+    // ⚙️ Determine if user *should approve*
+    // if (approvalStatus === 'PENDING' && myLevel && !isMyLevelApproved) {
+    //   // Check if all previous levels are approved
+    //   const previousLevels = levels.filter(
+    //     (lvl) => lvl.levelOrder < myLevel.levelOrder,
+    //   );
+    //
+    //   const allPrevApproved = previousLevels.every((lvl) =>
+    //     actions.some(
+    //       (a) => a.approvalLevel.id === lvl.id && a.action === 'APPROVED',
+    //     ),
+    //   );
+    //
+    //   shouldApprove = allPrevApproved;
+    // }
+
+    if (approvalStatus === 'PENDING' && myLevel && !isMyLevelApproved) {
+      // ✅ Check if all previous levels (by createdAt) are approved
+      const previousLevels = levels.filter(
+        (lvl) => new Date(lvl.createdAt) < new Date(myLevel.createdAt),
+      );
+
+      const allPrevApproved = previousLevels.every((lvl) =>
+        actions.some(
+          (a) => a.approvalLevel.id === lvl.id && a.action === 'APPROVED',
+        ),
+      );
+
+      shouldApprove = allPrevApproved;
+    }
+
+
+    return {
+      ...entity,
+      hasApprovalMode,
+      approvalStatus,
+      isMyLevelApproved,
+      shouldApprove,
+    };
+  }
 }

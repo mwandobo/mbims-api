@@ -6,7 +6,7 @@ import {
   Get,
   Param,
   Patch,
-  Post,
+  Post, Query,
 } from '@nestjs/common';
 import { AssetRequestService } from '../services/asset-request.service';
 import { CreateAssetRequestDto } from '../dtos/create-asset-request.dto';
@@ -29,8 +29,11 @@ export class AssetRequestController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.service.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @Query('roleId') roleId: string
+  ) {
+    return this.service.findOne(id, roleId);
   }
 
   @Patch(':id')
