@@ -54,16 +54,12 @@ export class DataFetchService {
 
   async getParties(): Promise<PartyResponseDto[]> {
     const response = await this.partyRepository.find();
-    return response.map((client) =>
-      PartyResponseDto.fromParty(client),
-    );
+    return response.map((client) => PartyResponseDto.fromParty(client));
   }
 
   async getRoles(): Promise<RoleResponseDto[]> {
     const response = await this.roleRepository.find();
-    return response.map((client) =>
-      RoleResponseDto.fromRole(client),
-    );
+    return response.map((client) => RoleResponseDto.fromRole(client));
   }
 
   async getAssetCategories(): Promise<AssetCategoryResponseDto[]> {
@@ -73,10 +69,22 @@ export class DataFetchService {
     );
   }
 
-  async getAssetsByCaregory(): Promise<AssetResponseDto[]> {
-    const response = await this.assetRepository.find();
-    return response.map((client) =>
-      AssetResponseDto.fromAsset(client),
-    );
+  // async getAssetsByCaregory(categoryId: string): Promise<AssetResponseDto[]> {
+  //   const response = await this.assetRepository.find({
+  //     where: { category: { id: categoryId } },
+  //   });
+  //   return response.map((client) => AssetResponseDto.fromAsset(client));
+  // }
+
+  async getAssetsByCategory(categoryId?: string) {
+    if (categoryId) {
+      return this.assetRepository.find({
+        where: { category: { id: categoryId } },
+        relations: ['category'],
+      });
+    }
+
+    // Return all if no category is provided
+    return [];
   }
 }

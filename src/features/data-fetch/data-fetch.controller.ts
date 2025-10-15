@@ -1,8 +1,4 @@
-import {
-  Controller,
-  Get,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
@@ -47,7 +43,7 @@ export class FetchDataController {
   }
 
   @Get('assets-by-categories')
-  async getAssetsByCategories() {
-    return this.dataFetchService.getAssetsByCaregory();
+  async getAssetsByCategories(@Query('categoryId') categoryId?: string) {
+    return this.dataFetchService.getAssetsByCategory(categoryId);
   }
 }

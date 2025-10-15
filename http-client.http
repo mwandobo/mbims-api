@@ -198,7 +198,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}fetch-data/assets-by-categories
+GET {{base_url}}fetch-data/assets-by-categories?categoryId=f6c3bb1d-4030-427a-ad0c-8c1e8a33d0cb
 Authorization: Bearer {{token}}
 
 ###
