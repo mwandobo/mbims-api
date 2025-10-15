@@ -7,7 +7,7 @@ import {
   Body,
   Param,
   Query,
-  ParseUUIDPipe,
+  ParseUUIDPipe, Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -40,9 +40,10 @@ export class ApprovalActionController {
   @Post()
   async create(
     @Body() createDto: CreateApprovalActionDto,
-    @Query('currentUserId') currentUserId: string,
+    @Req() req: any
   ): Promise<ApprovalAction> {
-    return this.approvalActionService.create(createDto, currentUserId);
+    const user = req.user; // the authenticated user extracted from the JWT
+    return this.approvalActionService.create(createDto, user);
   }
 
   /**

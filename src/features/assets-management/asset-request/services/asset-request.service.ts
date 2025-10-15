@@ -57,7 +57,9 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
     };
   }
 
-  async create(dto: CreateAssetRequestDto): Promise<AssetRequestResponseDto> {
+  async create(
+    dto: CreateAssetRequestDto,
+  ): Promise<AssetRequestResponseDto> {
     this.logger.log(`Creating asset request: ${JSON.stringify(dto)}`);
 
     const request = this.repo.create({
@@ -88,7 +90,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   }
 
   // Read one request
-  async findOne(id: string, roleId?:string): Promise<AssetRequestResponseDto> {
+  async findOne(id: string, user?: any): Promise<AssetRequestResponseDto> {
     const request = await this.repo.findOne({
       where: { id },
       relations: ['items', 'items.asset', 'items.asset.category'],
@@ -98,10 +100,12 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
       throw new NotFoundException(`Asset request with ID ${id} not found`);
     }
 
+    console.log('user', user);
+
     const requestWithStatus = await this.attachApprovalInfo(
       request,
       'AssetRequest',
-      roleId
+      user?.roleId,
     );
 
     // return AssetRequestResponseDto.fromEntity(requestWithStatus);

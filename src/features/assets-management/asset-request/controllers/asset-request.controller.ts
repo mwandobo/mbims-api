@@ -7,7 +7,7 @@ import {
   Param,
   Patch,
   Post,
-  Query,
+  Query, Req,
 } from '@nestjs/common';
 import { AssetRequestService } from '../services/asset-request.service';
 import { CreateAssetRequestDto } from '../dtos/create-asset-request.dto';
@@ -24,16 +24,19 @@ export class AssetRequestController {
   }
 
   @Post()
-  create(@Body() createDto: CreateAssetRequestDto) {
+  create(
+    @Body() createDto: CreateAssetRequestDto,
+  ) {
     return this.service.create(createDto);
   }
 
   @Get(':id')
   findOne(
     @Param('id') id: string,
-    @Query('roleId') roleId: string
+    @Req() req: any
   ) {
-    return this.service.findOne(id, roleId);
+    const user = req.user; // the authenticated user extracted from the JWT
+    return this.service.findOne(id, user);
   }
 
   @Patch(':id')

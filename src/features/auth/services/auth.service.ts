@@ -84,8 +84,10 @@ export class AuthService {
     const payload = {
       email: ldapUser.email,
       sub: savedUser.id,
-      role: savedUser.role,
+      roleId: savedUser.role?.id,
     };
+
+    console.log('payload', payload )
 
     const userNotificationBody = await this.notificationService.findByUserId(
       savedUser.id,

@@ -81,7 +81,6 @@ export class ApprovalStatusUtil {
       return 'PENDING';
     }
 
-
     const levels = await this.approvalLevelRepository.find({
       where: { userApproval: { id: userApproval.id } },
     });
@@ -96,8 +95,16 @@ export class ApprovalStatusUtil {
       return 'PENDING';
     }
 
+    // const actions = await this.approvalActionRepository.find({
+    //   where: { entityName, entityId },
+    //   relations: ['approvalLevel'],
+    // });
+
     const actions = await this.approvalActionRepository.find({
-      where: { entityName, entityId },
+      where: {
+        entityId,
+        approvalLevel: In(levels.map((lvl) => lvl.id)),
+      },
       relations: ['approvalLevel'],
     });
 
@@ -260,12 +267,24 @@ export class ApprovalStatusUtil {
     });
   }
 
-  async getActions(entityName: string, entityId: string) {
+  // async getActions(approvalLevelId: string, entityId: string) {
+  //   return this.approvalActionRepository.find({
+  //     where: {
+  //       approvalLevel: { id: approvalLevelId },
+  //       entityId,
+  //     },
+  //     relations: ['approvalLevel'],
+  //   });
+  // }
+
+  async getActions(entityId: string, levelIds: string[]) {
     return this.approvalActionRepository.find({
-      where: { entityName, entityId },
+      where: {
+        entityId,
+        approvalLevel: In(levelIds),
+      },
       relations: ['approvalLevel'],
     });
   }
-
 
 }

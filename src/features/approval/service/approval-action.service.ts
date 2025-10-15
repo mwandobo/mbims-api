@@ -62,7 +62,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
    */
   async create(
     dto: CreateApprovalActionDto,
-    currentUserId: string,
+    currentUser: any,
   ): Promise<ApprovalAction> {
 
     const approvalLevel = await this.approvalLevelRepository.findOne({
@@ -86,8 +86,9 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       );
 
     const user = await this.userRepository.findOne({
-      where: { id: currentUserId },
+      where: { id: currentUser.userId },
     });
+
     if (!user) throw new NotFoundException('User not found');
 
     const action = this.approvalActionRepository.create({

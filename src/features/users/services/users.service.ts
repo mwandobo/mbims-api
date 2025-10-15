@@ -151,6 +151,7 @@ export class UsersService extends BaseService<User> {
   async findByEmail(email: string): Promise<User | undefined> {
     return this.usersRepository.findOne({
       where: { email },
+      relations: ['role']
     });
   }
 
