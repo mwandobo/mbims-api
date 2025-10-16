@@ -43,7 +43,7 @@ export class FetchDataController {
   }
 
   @Get('assets-by-categories')
-  async getAssetsByCategories(@Query('categoryId') categoryId?: string) {
+  async getAssetsByCategories(@Query('type') categoryId?: string) {
     return this.dataFetchService.getAssetsByCategory(categoryId);
   }
 }

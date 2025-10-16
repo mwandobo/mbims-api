@@ -9,7 +9,9 @@ export class AssetRequestItemEntity extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => AssetRequestEntity, (request) => request.items)
+  @ManyToOne(() => AssetRequestEntity, (request) => request.items, {
+    onDelete: 'CASCADE',
+  })
   request: AssetRequestEntity;
 
   @ManyToOne(() => AssetEntity, (asset) => asset.requestItems)

@@ -1,14 +1,12 @@
 // asset-request/dto/create-asset-request.dto.ts
-import { IsUUID, IsString, ArrayNotEmpty, IsArray } from 'class-validator';
+import { IsUUID } from 'class-validator';
 
 export class CreateAssetRequestItemDto {
-  @IsString()
-  name: string;
+  @IsUUID()
+  category_id: string;
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsUUID("all", { each: true })
-  asset_ids: string[]; // array of asset IDs
+  @IsUUID()
+  asset_id: string; // array of asset IDs
 
   // @IsUUID()
   // requestId: string;

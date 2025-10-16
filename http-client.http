@@ -198,7 +198,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}fetch-data/assets-by-categories?categoryId=f6c3bb1d-4030-427a-ad0c-8c1e8a33d0cb
+GET {{base_url}}fetch-data/assets-by-categories?type=f6c3bb1d-4030-427a-ad0c-8c1e8a33d0cb
 Authorization: Bearer {{token}}
 
 ###
@@ -435,23 +435,18 @@ Content-Type: application/json
   "description": "This is the sapmle party"
 }
 
-
 ###
-GET {{base_url}}/requested-assets?requestId=f515d277-03b1-4b2d-b619-6f6bd6d79090
+GET {{base_url}}/requested-assets?requestId=325a7539-42b7-44c8-92f3-959bab64784b
 Authorization: Bearer {{token}}
 
-
 ###
-POST {{base_url}}/requested-assets?requestId=f515d277-03b1-4b2d-b619-6f6bd6d79090
+POST {{base_url}}/requested-assets?requestId=325a7539-42b7-44c8-92f3-959bab64784b
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Main Request",
-  "asset_ids": [
-    "f9ef7f0e-e231-4aab-b178-75e704c68aa0",
-    "fb45c4f0-673c-43fb-b941-1615f195870e"
-  ]
+  "category_id":"91b02b42-fac7-437c-bf27-290242e83f7a",
+  "asset_id":"fb45c4f0-673c-43fb-b941-1615f195870e"
 }
 
 ###

@@ -5,7 +5,7 @@ import { AssetRequestService } from './services/asset-request.service';
 import { AssetRequestController } from './controllers/asset-request.controller';
 import { AssetRequestItemEntity } from './entity/asset-request-item.entity';
 import { AssetEntity } from '../asset/asset.entity';
-import { RequestedAssetsController } from './controllers/asset-request-item.controller';
+import { RequestedAssetsController } from './controllers/requested-asset.controller';
 import { RequestedAssetsService } from './services/requested-assets.service';
 import { ApprovalsModule } from '../../approval/approvals.module';
 
