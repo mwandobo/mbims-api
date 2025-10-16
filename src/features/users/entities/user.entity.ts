@@ -3,11 +3,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Role } from '../../../admnistration/roles/entities/role.entity';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { DepartmentEntity } from '../../../admnistration/department/entities/department.entity';
+import { AssetRequestItemEntity } from '../../assets-management/asset-request/entity/asset-request-item.entity';
+import { AssetRequestEntity } from '../../assets-management/asset-request/entity/asset-request.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -39,4 +42,7 @@ export class User extends BaseEntity {
 
   @Column({ name: 'can_receive_email', default: false, type: 'boolean' })
   canReceiveEmail: boolean;
+
+  @OneToMany(() => AssetRequestEntity, (assetRequest) => assetRequest.user)
+  assetRequests: AssetRequestEntity[];
 }

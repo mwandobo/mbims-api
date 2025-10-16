@@ -7,12 +7,13 @@ import {
   Param,
   Patch,
   Post,
-  Query, Req,
+  Req,
 } from '@nestjs/common';
 import { AssetRequestService } from '../services/asset-request.service';
 import { CreateAssetRequestDto } from '../dtos/create-asset-request.dto';
 import { Pagination } from '../../../../common/decorators/pagination.decorator';
 import { PaginationDto } from '../../../../common/dtos/pagination.dto';
+import { UpdateAssetRequestDto } from '../dtos/update-asset-request.dto';
 
 @Controller('asset-requests')
 export class AssetRequestController {
@@ -26,8 +27,10 @@ export class AssetRequestController {
   @Post()
   create(
     @Body() createDto: CreateAssetRequestDto,
+    @Req() req: any
   ) {
-    return this.service.create(createDto);
+    const user = req.user; // the authenticated user extracted from the JWT
+    return this.service.create(createDto, user);
   }
 
   @Get(':id')
@@ -42,9 +45,11 @@ export class AssetRequestController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    // @Body() updateDto: UpdateAssetRequestDto,
+    @Body() updateDto: UpdateAssetRequestDto,
+    @Req() req: any
   ) {
-    return this.service.update(id);
+    const user = req.user; // the authenticated user extracted from the JWT
+    return this.service.update(id, updateDto, user);
   }
 
   @Delete(':id')

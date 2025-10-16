@@ -404,21 +404,17 @@ GET {{base_url}}/asset-requests
 Authorization: Bearer {{token}}
 
 ###
-POST {{base_url}}/asset-requests
+PATCH {{base_url}}/asset-requests/325a7539-42b7-44c8-92f3-959bab64784b
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": "Main Request",
-  "description": "Main Request Description",
-  "asset_ids": [
-    "f9ef7f0e-e231-4aab-b178-75e704c68aa0",
-    "fb45c4f0-673c-43fb-b941-1615f195870e"
-  ]
+  "name": "Some testing asset  2",
+  "description": "Main Request Description"
 }
 
 ###
-GET {{base_url}}/asset-requests/f515d277-03b1-4b2d-b619-6f6bd6d79090
+GET {{base_url}}/asset-requests/a047f576-dfd3-405d-8cc1-58352bf73f08
 Authorization: Bearer {{token}}
 
 ###

@@ -8,6 +8,7 @@ import {
 import { AssetCategoryEntity } from '../../asset-category/asset-category.entity';
 import { AssetRequestItemEntity } from './asset-request-item.entity';
 import { BaseEntity } from '../../../../common/entities/base.entity';
+import { User } from '../../../users/entities/user.entity';
 
 @Entity('asset_requests')
 export class AssetRequestEntity extends BaseEntity{
@@ -22,6 +23,9 @@ export class AssetRequestEntity extends BaseEntity{
 
   @ManyToOne(() => AssetCategoryEntity, (assetCategory) => assetCategory.assets)
   category: AssetCategoryEntity;
+
+  @ManyToOne(() => User, (user) => user.assetRequests)
+  user: User;
 
   @OneToMany(() => AssetRequestItemEntity, (item) => item.request)
   items: AssetRequestItemEntity[];

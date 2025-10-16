@@ -15,6 +15,8 @@ import { AssetRequestResponseDto } from '../dtos/asset-request-response.dto';
 import { CreateAssetRequestDto } from '../dtos/create-asset-request.dto';
 import { ApprovalStatusUtil } from '../../../approval/utils/approval-status.util';
 import { plainToInstance } from 'class-transformer';
+import { UpdateAssetRequestDto } from '../dtos/update-asset-request.dto';
+import { LoggedInUserDto } from '../../../../common/dtos/logged-in-user.dto';
 
 @Injectable()
 export class AssetRequestService extends BaseService<AssetRequestEntity> {
@@ -41,7 +43,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   ): Promise<PaginatedResponseDto<AssetRequestResponseDto>> {
     const response = await this.findAllPaginated(
       pagination,
-      ['items', 'items.asset', 'items.asset.category'], // load request items and their assets
+      ['user'], // load request items and their assets
       { fields: [] },
     );
 
@@ -59,31 +61,33 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
 
   async create(
     dto: CreateAssetRequestDto,
+    user: LoggedInUserDto,
   ): Promise<AssetRequestResponseDto> {
     this.logger.log(`Creating asset request: ${JSON.stringify(dto)}`);
 
     const request = this.repo.create({
       name: dto.name,
       description: dto.description,
+      user: { id: user.userId },
     });
     const savedRequest = await this.repo.save(request);
 
-    const items: AssetRequestItemEntity[] = [];
-    for (const asset_id of dto.asset_ids) {
-      const asset = await this.assetRepo.findOne({ where: { id: asset_id } });
-      if (!asset) {
-        throw new NotFoundException(`Asset with ID ${asset_id} not found`);
-      }
+    // const items: AssetRequestItemEntity[] = [];
+    // for (const asset_id of dto.asset_ids) {
+    //   const asset = await this.assetRepo.findOne({ where: { id: asset_id } });
+    //   if (!asset) {
+    //     throw new NotFoundException(`Asset with ID ${asset_id} not found`);
+    //   }
+    //
+    //   const item = this.itemRepo.create({
+    //     request: savedRequest,
+    //     asset,
+    //     quantity: 1, // default
+    //   });
+    //   items.push(await this.itemRepo.save(item));
+    // }
 
-      const item = this.itemRepo.create({
-        request: savedRequest,
-        asset,
-        quantity: 1, // default
-      });
-      items.push(await this.itemRepo.save(item));
-    }
-
-    savedRequest.items = items;
+    // savedRequest.items = items;
 
     // ✅ keep using response DTO for output
     return AssetRequestResponseDto.fromEntity(savedRequest);
@@ -93,7 +97,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   async findOne(id: string, user?: any): Promise<AssetRequestResponseDto> {
     const request = await this.repo.findOne({
       where: { id },
-      relations: ['items', 'items.asset', 'items.asset.category'],
+      relations: ['user', 'items', 'items.asset', 'items.asset.category'],
     });
 
     if (!request) {
@@ -115,22 +119,31 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   // Update a request (replace items)
   async update(
     id: string,
-    // dto: UpdateAssetRequestDto,
+    dto: UpdateAssetRequestDto,
+    user: LoggedInUserDto,
   ): Promise<AssetRequestResponseDto> {
     const request = await this.repo.findOne({
       where: { id },
-      relations: ['items'],
     });
 
     if (!request) {
       throw new NotFoundException(`Asset request with ID ${id} not found`);
     }
+    const assetRequest = await this.repo.preload({
+      id,
+      ...dto,
+      user: { id: user.userId },
+    });
+
+    const updatedAssetRequest = await this.repo.save(assetRequest);
+
+
 
     // Remove old items
-    await this.itemRepo.delete({ request: { id } });
+    // await this.itemRepo.delete({ request: { id } });
 
     // Add new items
-    const items: AssetRequestItemEntity[] = [];
+    // const items: AssetRequestItemEntity[] = [];
     // for (const { asset_id, quantity } of dto.items) {
     //   const asset = await this.assetRepo.findOne({ where: { id: asset_id } });
     //   if (!asset) {
@@ -140,8 +153,8 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
     //   items.push(await this.itemRepo.save(item));
     // }
 
-    request.items = items;
-    return AssetRequestResponseDto.fromEntity(request);
+    // request.items = items;
+    return AssetRequestResponseDto.fromEntity(updatedAssetRequest);
   }
 
   // Delete a request

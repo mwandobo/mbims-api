@@ -49,11 +49,10 @@ export class AssetRequestResponseDto {
   description: string;
 
   @Expose()
-  updatedAt: Date;
+  createdBy: string;
 
   @Expose()
-  @Type(() => AssetRequestItemResponseDto)
-  items: AssetRequestItemResponseDto[];
+  updatedAt: Date;
 
   static fromEntity(entity: AssetRequestEntity): AssetRequestResponseDto {
     const dto = new AssetRequestResponseDto();
@@ -63,14 +62,11 @@ export class AssetRequestResponseDto {
     dto.description = entity.description;
     dto.createdAt = entity.createdAt;
     dto.updatedAt = entity.updatedAt;
+    dto.createdBy = entity.user?.name ?? "";
     dto.formattedCreatedAt = format(
       new Date(entity.createdAt),
       'dd/MM/yyyy',
     );
-    dto.items =
-      entity.items?.map((item) =>
-        AssetRequestItemResponseDto.fromEntity(item),
-      ) ?? [];
     return dto;
   }
 }

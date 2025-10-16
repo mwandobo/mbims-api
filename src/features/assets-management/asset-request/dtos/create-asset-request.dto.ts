@@ -1,5 +1,5 @@
 // asset-request/dto/create-asset-request.dto.ts
-import { IsUUID, IsArray, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateAssetRequestDto {
   @IsString()
@@ -8,7 +8,7 @@ export class CreateAssetRequestDto {
   @IsString()
   description: string;
 
-  @IsArray()
-  @IsUUID("4", { each: true }) // validate each ID is UUID v4
-  asset_ids: string[];
+  // @IsArray()
+  // @IsUUID("4", { each: true }) // validate each ID is UUID v4
+  // asset_ids: string[];
 }
