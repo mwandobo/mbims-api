@@ -33,6 +33,7 @@ export class SysApprovalSeederService implements OnModuleInit {
         description: 'Handles Asset Requests approvals',
         entityName: 'AssetRequest',
       },
+
     ];
 
     for (const approval of approvals) {

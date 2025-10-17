@@ -266,6 +266,15 @@ export class AdminUserSeederService implements OnModuleInit {
           { name: 'asset_request_delete', description: 'Delete Asset Request' },
         ],
       },
+      {
+        group: 'approval',
+        permissions: [
+          { name: 'approval_create', description: 'Create Approval' },
+          { name: 'approval_read', description: 'View Approval' },
+          { name: 'approval_update', description: 'Edit Approval' },
+          { name: 'approval_delete', description: 'Delete Approval' },
+        ],
+      },
     ];
 
     const allPermissions: Permission[] = [];

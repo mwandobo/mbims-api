@@ -436,11 +436,21 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}/requested-assets?requestId=325a7539-42b7-44c8-92f3-959bab64784b
+GET {{base_url}}/requested-assets
 Authorization: Bearer {{token}}
 
 ###
 POST {{base_url}}/requested-assets?requestId=325a7539-42b7-44c8-92f3-959bab64784b
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "category_id":"91b02b42-fac7-437c-bf27-290242e83f7a",
+  "asset_id":"fb45c4f0-673c-43fb-b941-1615f195870e"
+}
+
+###
+PATCH {{base_url}}/requested-assets/8c9d6074-594b-4791-9af3-4040f23d1c87?requestId=325a7539-42b7-44c8-92f3-959bab64784b
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
