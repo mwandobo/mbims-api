@@ -8,6 +8,7 @@ import {
   Delete,
   Query,
   ParseUUIDPipe,
+  Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -42,11 +43,24 @@ export class ApprovalLevelController {
   @Post()
   async create(
     @Body() createApprovalLevelDto: CreateApprovalLevelDto,
+    @Query('userApprovalId') UserApprovalId: string,
+    @Req() req: any
   ): Promise<ApprovalLevel> {
+    const user = req.user;
     return this.approvalLevelService.createApprovalLevel(
       createApprovalLevelDto,
+      UserApprovalId,
+      user
     );
   }
+
+  @Get(':id')
+  findOne(
+    @Param('id') id: string,
+  ) {
+    return this.approvalLevelService.findOne(id);
+  }
+
 
   /**
    * Update approval level by ID

@@ -480,11 +480,11 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}/approval-levels
+GET {{base_url}}/approval-levels/57a5c3ba-284f-46d9-a311-a552a3f2a6a1
 Authorization: Bearer {{token}}
 
 ###
-POST {{base_url}}/approval-levels
+POST {{base_url}}/approval-levels/57a5c3ba-284f-46d9-a311-a552a3f2a6a1
 Authorization: Bearer {{token}}
 Content-Type: application/json
 

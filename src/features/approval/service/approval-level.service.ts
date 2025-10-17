@@ -1,14 +1,10 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { ApprovalLevel } from '../entities/approval-level.entity';
 import { UserApproval } from '../entities/user-approval.entity';
 
-import { StatusEnum } from '../enums/status.enum';
 import {
   PaginatedResponseDto,
   PaginationDto,
@@ -16,9 +12,11 @@ import {
 import { BaseService } from '../../../common/services/base-service';
 import { Role } from '../../../admnistration/roles/entities/role.entity';
 import { User } from '../../users/entities/user.entity';
-import { NotificationService } from '../../../notification/notification.service';
 import { CreateApprovalLevelDto } from '../dto/create-approval-level.dto';
 import { UpdateApprovalLevelDto } from '../dto/update-approval-level.dto';
+import { LoggedInUserDto } from '../../../common/dtos/logged-in-user.dto';
+import { AssetRequestResponseDto } from '../../assets-management/asset-request/dtos/asset-request-response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ApprovalLevelService extends BaseService<ApprovalLevel> {
@@ -45,7 +43,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
    */
   async findAll(
     pagination: PaginationDto,
-    userApprovalId: String
+    userApprovalId: string,
   ): Promise<PaginatedResponseDto<ApprovalLevel>> {
     const response = await this.findAllPaginated(
       pagination,
@@ -76,42 +74,57 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
    * Create an approval level
    */
 
-
-
-
   async createApprovalLevel(
     dto: CreateApprovalLevelDto,
+    userApprovalId: string,
+    user: LoggedInUserDto,
   ): Promise<ApprovalLevel> {
     const approvalLevel = this.approvalLevelRepository.create({
       name: dto.name,
       description: dto.description,
       level: dto.level,
+      user: { id: user.userId },
     });
 
     // Validate relations
-    const userApproval = await this.validateUserApproval(dto.userApprovalId);
+    const userApproval = await this.validateUserApproval(userApprovalId);
     approvalLevel.userApproval = userApproval;
 
     let role: Role | null = null;
-    let user: User | null = null;
 
     if (dto.roleId) {
       role = await this.validateRole(dto.roleId);
       approvalLevel.role = role;
     }
 
-    if (dto.userId) {
-      user = await this.validateUser(dto.userId);
-      approvalLevel.user = user;
-    }
-
     const saved = await this.approvalLevelRepository.save(approvalLevel);
 
     // Send notifications
-    await this.sendCreateLevelNotification(saved, role, user);
+    await this.sendCreateLevelNotification(saved, role);
 
     return saved;
   }
+
+  async findOne(id: string): Promise<ApprovalLevel> {
+    const request = await this.approvalLevelRepository.findOne({
+      where: { id },
+      relations: ['role'],
+    });
+
+    if (!request) {
+      throw new NotFoundException(`Asset request with ID ${id} not found`);
+    }
+
+    // const requestWithStatus = await this.attachApprovalInfo(
+    //   request,
+    //   'AssetRequest',
+    //   user?.roleId,
+    // );
+
+    // return AssetRequestResponseDto.fromEntity(requestWithStatus);
+    return plainToInstance(ApprovalLevel, request);
+  }
+
 
   /**
    * Update an approval level
@@ -162,7 +175,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       throw new NotFoundException(`ApprovalLevel with ID ${id} not found`);
     }
     await this.approvalLevelRepository.remove(level);
-
   }
 
   /**
@@ -171,7 +183,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
   private async sendCreateLevelNotification(
     level: ApprovalLevel,
     role?: Role,
-    user?: User,
   ): Promise<void> {
     const context = {
       levelName: level.name,
@@ -186,8 +197,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
         where: { role: { id: role.id } },
       });
       recipients = users.map((u) => u.email);
-    } else if (user) {
-      recipients = [user.email];
     }
 
     if (!recipients.length) return;
