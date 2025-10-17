@@ -10,6 +10,7 @@ import { DepartmentEntity } from '../../admnistration/department/entities/depart
 import { AssetCategoryEntity } from '../assets-management/asset-category/asset-category.entity';
 import { AssetResponseDto } from '../assets-management/asset/dtos/asset-response.dto';
 import { AssetEntity } from '../assets-management/asset/asset.entity';
+import { SysApproval } from '../approval/entities/system-approval.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { AssetEntity } from '../assets-management/asset/asset.entity';
       Role,
       Party,
       AssetCategoryEntity,
-      AssetEntity
+      AssetEntity,
+      SysApproval
     ]),
   ], // must import the entity here
   controllers: [FetchDataController],

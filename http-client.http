@@ -198,7 +198,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}fetch-data/assets-by-categories?type=f6c3bb1d-4030-427a-ad0c-8c1e8a33d0cb
+GET {{base_url}}fetch-data/sys-approvals
 Authorization: Bearer {{token}}
 
 ###
@@ -469,7 +469,7 @@ GET {{base_url}}/user-approvals
 Authorization: Bearer {{token}}
 
 ###
-POST {{base_url}}/user-approvals
+POST {{base_url}}/user-approvalsff
 Authorization: Bearer {{token}}
 Content-Type: application/json
 

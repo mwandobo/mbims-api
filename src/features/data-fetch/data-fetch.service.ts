@@ -15,6 +15,8 @@ import { AssetCategoryResponseDto } from '../assets-management/asset-category/dt
 import { AssetCategoryEntity } from '../assets-management/asset-category/asset-category.entity';
 import { AssetResponseDto } from '../assets-management/asset/dtos/asset-response.dto';
 import { AssetEntity } from '../assets-management/asset/asset.entity';
+import { SysApprovalResponseDto } from '../approval/dto/sys-approval.dto';
+import { SysApproval } from '../approval/entities/system-approval.entity';
 
 @Injectable()
 export class DataFetchService {
@@ -33,11 +35,20 @@ export class DataFetchService {
     private readonly assetCategoryRepository: Repository<AssetCategoryEntity>,
     @InjectRepository(AssetEntity)
     private readonly assetRepository: Repository<AssetEntity>,
+    @InjectRepository(SysApproval)
+    private readonly sysApprovalRepository: Repository<SysApproval>,
   ) {}
 
   async getSuppliers(): Promise<SupplierResponseDto[]> {
     const response = await this.supplierRepository.find();
     return response.map((client) => SupplierResponseDto.fromSupplier(client));
+  }
+
+  async getSysApprovals(): Promise<SysApprovalResponseDto[]> {
+    const response = await this.sysApprovalRepository.find();
+    return response.map((client) =>
+      SysApprovalResponseDto.fromSysApprovals(client),
+    );
   }
 
   async getClients(): Promise<ClientResponseDto[]> {

@@ -46,4 +46,9 @@ export class FetchDataController {
   async getAssetsByCategories(@Query('type') categoryId?: string) {
     return this.dataFetchService.getAssetsByCategory(categoryId);
   }
+
+  @Get('sys-approvals')
+  async getSysApprovals() {
+    return this.dataFetchService.getSysApprovals();
+  }
 }
