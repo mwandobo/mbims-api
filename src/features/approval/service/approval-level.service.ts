@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThan, Not, Repository } from 'typeorm';
 
 import { ApprovalLevel } from '../entities/approval-level.entity';
 import { UserApproval } from '../entities/user-approval.entity';
@@ -17,9 +17,12 @@ import { UpdateApprovalLevelDto } from '../dto/update-approval-level.dto';
 import { LoggedInUserDto } from '../../../common/dtos/logged-in-user.dto';
 import { AssetRequestResponseDto } from '../../assets-management/asset-request/dtos/asset-request-response.dto';
 import { plainToInstance } from 'class-transformer';
+import { ApprovalAction } from '../entities/approval-action.entity';
 
 @Injectable()
 export class ApprovalLevelService extends BaseService<ApprovalLevel> {
+  private readonly logger = new Logger(ApprovalLevelService.name);
+
   constructor(
     @InjectRepository(ApprovalLevel)
     private readonly approvalLevelRepository: Repository<ApprovalLevel>,
@@ -32,6 +35,10 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    @InjectRepository(ApprovalAction)
+    private readonly approvalActionRepository: Repository<ApprovalAction>,
+
 
     // private readonly notificationService: NotificationService,
   ) {
@@ -74,11 +81,108 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
    * Create an approval level
    */
 
+  // async createApprovalLevel(
+  //   dto: CreateApprovalLevelDto,
+  //   userApprovalId: string,
+  //   user: LoggedInUserDto,
+  // ): Promise<ApprovalLevel> {
+  //   const approvalLevel = this.approvalLevelRepository.create({
+  //     name: dto.name,
+  //     description: dto.description,
+  //     level: dto.level,
+  //     user: { id: user.userId },
+  //   });
+  //
+  //   // Validate relations
+  //   const userApproval = await this.validateUserApproval(userApprovalId);
+  //   approvalLevel.userApproval = userApproval;
+  //
+  //   let role: Role | null = null;
+  //
+  //   if (dto.roleId) {
+  //     role = await this.validateRole(dto.roleId);
+  //     approvalLevel.role = role;
+  //   }
+  //
+  //   const saved = await this.approvalLevelRepository.save(approvalLevel);
+  //
+  //   // Send notifications
+  //   await this.sendCreateLevelNotification(saved, role);
+  //
+  //   return saved;
+  // }
+
+  // async createApprovalLevel(
+  //   dto: CreateApprovalLevelDto,
+  //   userApprovalId: string,
+  //   user: LoggedInUserDto,
+  // ): Promise<ApprovalLevel> {
+  //   const approvalLevel = this.approvalLevelRepository.create({
+  //     name: dto.name,
+  //     description: dto.description,
+  //     level: dto.level,
+  //     user: { id: user.userId },
+  //   });
+  //
+  //   // ✅ Validate relations
+  //   const userApproval = await this.validateUserApproval(userApprovalId);
+  //   approvalLevel.userApproval = userApproval;
+  //
+  //   let role: Role | null = null;
+  //   if (dto.roleId) {
+  //     role = await this.validateRole(dto.roleId);
+  //     approvalLevel.role = role;
+  //   }
+  //
+  //   // ✅ Save the new approval level first
+  //   const saved = await this.approvalLevelRepository.save(approvalLevel);
+  //
+  //   // ✅ Step 1: Check if previous level exists
+  //   const previousLevel = await this.approvalLevelRepository.findOne({
+  //     where: { userApproval: { id: userApproval.id } },
+  //     order: { createdAt: 'DESC' }, // ✅ get the latest created level
+  //   });
+  //
+  //   if (previousLevel) {
+  //     // ✅ Step 2: Get all actions from previous level
+  //     const previousActions = await this.approvalActionRepository.find({
+  //       where: { approvalLevel: { id: previousLevel.id } },
+  //     });
+  //
+  //     if (previousActions.length > 0) {
+  //       // ✅ Step 3: Duplicate them for the new level
+  //       const newActions = previousActions.map((act) =>
+  //         this.approvalActionRepository.create({
+  //           approvalLevel: { id: saved.id },
+  //           user: { id: user.userId }, // creator of the new level
+  //           name: act.name,
+  //           description: act.description,
+  //           action: act.action,
+  //           entityName: act.entityName,
+  //           entityId: act.entityId,
+  //         }),
+  //       );
+  //
+  //       // ✅ Step 4: Save all new actions
+  //       await this.approvalActionRepository.save(newActions);
+  //     }
+  //   }
+  //
+  //   // ✅ Send notifications
+  //   await this.sendCreateLevelNotification(saved, role);
+  //
+  //   return saved;
+  // }
+
+
   async createApprovalLevel(
     dto: CreateApprovalLevelDto,
     userApprovalId: string,
     user: LoggedInUserDto,
   ): Promise<ApprovalLevel> {
+
+    this.logger.log(`Creating approval level for user ${user.userId} with name: ${dto.name}`);
+
     const approvalLevel = this.approvalLevelRepository.create({
       name: dto.name,
       description: dto.description,
@@ -86,24 +190,79 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       user: { id: user.userId },
     });
 
-    // Validate relations
+    // ✅ Validate relations
+    this.logger.log(`Validating userApproval with id: ${userApprovalId}`);
     const userApproval = await this.validateUserApproval(userApprovalId);
     approvalLevel.userApproval = userApproval;
 
     let role: Role | null = null;
-
     if (dto.roleId) {
+      this.logger.log(`Validating role with id: ${dto.roleId}`);
       role = await this.validateRole(dto.roleId);
       approvalLevel.role = role;
     }
 
+    // ✅ Save the new approval level first
     const saved = await this.approvalLevelRepository.save(approvalLevel);
+    this.logger.log(`Saved new approval level with id: ${saved.id}`);
 
-    // Send notifications
+    // ✅ Step 1: Check if previous level exists
+    // const previousLevel = await this.approvalLevelRepository.findOne({
+    //   where: { userApproval: { id: userApproval.id } },
+    //   order: { createdAt: 'DESC' },
+    // });
+
+    const previousLevel = await this.approvalLevelRepository.findOne({
+      where: {
+        userApproval: { id: userApproval.id },
+        createdAt: LessThan(saved.createdAt),
+        id: Not(saved.id),
+      },
+      order: { createdAt: 'DESC' },
+    });
+
+    if (previousLevel) {
+      this.logger.log(`Found previous level with id: ${previousLevel.id}, duplicating actions...`);
+
+      // ✅ Step 2: Get all actions from previous level
+      const previousActions = await this.approvalActionRepository.find({
+        where: { approvalLevel: { id: previousLevel.id } },
+      });
+
+      this.logger.log(`Found ${previousActions.length} previous actions`);
+
+      if (previousActions.length > 0) {
+        // ✅ Step 3: Duplicate them for the new level
+        const newActions = previousActions.map((act) =>
+          this.approvalActionRepository.create({
+            approvalLevel: { id: saved.id },
+            user: { id: user.userId }, // creator of the new level
+            name: act.name,
+            description: act.description,
+            action: act.action,
+            entityName: act.entityName,
+            entityId: act.entityId,
+          }),
+        );
+
+        // ✅ Step 4: Save all new actions
+        await this.approvalActionRepository.save(newActions);
+        this.logger.log(`Saved ${newActions.length} duplicated actions for new level id: ${saved.id}`);
+      } else {
+        this.logger.log('No previous actions to duplicate');
+      }
+    } else {
+      this.logger.log('No previous approval level found');
+    }
+
+    // ✅ Send notifications
+    this.logger.log('Sending notifications for new approval level');
     await this.sendCreateLevelNotification(saved, role);
 
+    this.logger.log(`Approval level creation completed: id=${saved.id}`);
     return saved;
   }
+
 
   async findOne(id: string): Promise<ApprovalLevel> {
     const request = await this.approvalLevelRepository.findOne({

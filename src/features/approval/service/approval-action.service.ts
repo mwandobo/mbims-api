@@ -17,7 +17,6 @@ import {
 import { CreateApprovalActionDto } from '../dto/create-approval-action.dto';
 import { UpdateApprovalActionDto } from '../dto/update-approval-action.dto';
 import { ApprovalActionEnum } from '../enums/approval-action.enum';
-import { AssetRequestResponseDto } from '../../assets-management/asset-request/dtos/asset-request-response.dto';
 import { ApprovalActionResponseDto } from '../dto/approval-action-response.dto';
 
 @Injectable()
@@ -102,9 +101,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       where: { id: dto.approvalLevelId },
     });
     if (!approvalLevel) throw new NotFoundException('Approval Level not found');
-
-    console.log('entityid', dto.entityId)
-    console.log('levelid', dto.approvalLevelId)
 
     // Check duplicate
     const existing = await this.approvalActionRepository.findOne({
