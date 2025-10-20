@@ -488,10 +488,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": " Approval 4",
+  "name": " Approval 5",
   "description": "Handles testing approval workflow for Asset Request",
   "level": "LEVEL_6",
-  "roleId": "31f19b8e-d3df-4283-a265-5b994dbca53d"
+  "roleId": "c02d9613-31dc-462d-b43a-c539d5b8bd9e"
 }
 
 ###
@@ -500,7 +500,7 @@ Authorization: Bearer {{token}}
 
 
 ### asset_request_items
-GET {{base_url}}/approval-actions?q=325a7539-42b7-44c8-92f3-959bab64784b
+GET {{base_url}}/approval-actions
 Authorization: Bearer {{token}}
 
 ###
@@ -512,5 +512,5 @@ Content-Type: application/json
   "action": "APPROVED",
   "entityId": "38ae56ef-de78-425c-896c-0ac81fe73f5d",
   "description": "Approve Department #INV-2025-01 for payment",
-  "approvalLevelId": "e70f500e-e2b7-4e5d-900e-06b0e7bf6839"
+  "approvalLevelId": "f76e1b78-6c2f-4045-ba3b-08b8769fa539"
 }

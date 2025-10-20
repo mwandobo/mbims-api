@@ -13,6 +13,7 @@ import { UserApproval } from './user-approval.entity';
 import { Role } from '../../../admnistration/roles/entities/role.entity';
 import { User } from '../../users/entities/user.entity';
 import { ApprovalActionEnum } from '../enums/approval-action.enum';
+import { ApprovalActionCreationTypeEnum } from '../enums/approval-action-creation-type.enum';
 
 @Entity('approval_actions')
 export class ApprovalAction extends BaseEntity {
@@ -29,6 +30,14 @@ export class ApprovalAction extends BaseEntity {
     nullable: false,
   })
   action: ApprovalActionEnum;
+
+  @Column({
+    type: 'enum',
+    enum: ApprovalActionCreationTypeEnum,
+    default: ApprovalActionCreationTypeEnum.NORMAL,
+    nullable: false,
+  })
+  type: ApprovalActionCreationTypeEnum;
 
   @Column({ nullable: true })
   entityName: string;

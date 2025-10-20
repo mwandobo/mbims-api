@@ -15,9 +15,9 @@ import { User } from '../../users/entities/user.entity';
 import { CreateApprovalLevelDto } from '../dto/create-approval-level.dto';
 import { UpdateApprovalLevelDto } from '../dto/update-approval-level.dto';
 import { LoggedInUserDto } from '../../../common/dtos/logged-in-user.dto';
-import { AssetRequestResponseDto } from '../../assets-management/asset-request/dtos/asset-request-response.dto';
 import { plainToInstance } from 'class-transformer';
 import { ApprovalAction } from '../entities/approval-action.entity';
+import { ApprovalActionCreationTypeEnum } from '../enums/approval-action-creation-type.enum';
 
 @Injectable()
 export class ApprovalLevelService extends BaseService<ApprovalLevel> {
@@ -38,7 +38,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
 
     @InjectRepository(ApprovalAction)
     private readonly approvalActionRepository: Repository<ApprovalAction>,
-
 
     // private readonly notificationService: NotificationService,
   ) {
@@ -174,14 +173,14 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
   //   return saved;
   // }
 
-
   async createApprovalLevel(
     dto: CreateApprovalLevelDto,
     userApprovalId: string,
     user: LoggedInUserDto,
   ): Promise<ApprovalLevel> {
-
-    this.logger.log(`Creating approval level for user ${user.userId} with name: ${dto.name}`);
+    this.logger.log(
+      `Creating approval level for user ${user.userId} with name: ${dto.name}`,
+    );
 
     const approvalLevel = this.approvalLevelRepository.create({
       name: dto.name,
@@ -222,7 +221,9 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     });
 
     if (previousLevel) {
-      this.logger.log(`Found previous level with id: ${previousLevel.id}, duplicating actions...`);
+      this.logger.log(
+        `Found previous level with id: ${previousLevel.id}, duplicating actions...`,
+      );
 
       // ✅ Step 2: Get all actions from previous level
       const previousActions = await this.approvalActionRepository.find({
@@ -242,12 +243,15 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
             action: act.action,
             entityName: act.entityName,
             entityId: act.entityId,
+            type: ApprovalActionCreationTypeEnum.AUTOMATIC,
           }),
         );
 
         // ✅ Step 4: Save all new actions
         await this.approvalActionRepository.save(newActions);
-        this.logger.log(`Saved ${newActions.length} duplicated actions for new level id: ${saved.id}`);
+        this.logger.log(
+          `Saved ${newActions.length} duplicated actions for new level id: ${saved.id}`,
+        );
       } else {
         this.logger.log('No previous actions to duplicate');
       }
@@ -262,7 +266,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     this.logger.log(`Approval level creation completed: id=${saved.id}`);
     return saved;
   }
-
 
   async findOne(id: string): Promise<ApprovalLevel> {
     const request = await this.approvalLevelRepository.findOne({
@@ -283,7 +286,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     // return AssetRequestResponseDto.fromEntity(requestWithStatus);
     return plainToInstance(ApprovalLevel, request);
   }
-
 
   /**
    * Update an approval level

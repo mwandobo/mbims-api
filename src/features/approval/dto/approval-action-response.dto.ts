@@ -14,6 +14,9 @@ export class ApprovalActionResponseDto {
   remark: string;
 
   @Expose()
+  type: string;
+
+  @Expose()
   approvedBy: string;
 
   @Expose()
@@ -37,6 +40,7 @@ export class ApprovalActionResponseDto {
     dto.remark = entity.description;
     dto.action = entity.action;
     dto.approvedBy = entity.user?.name;
+    dto.type = entity.type;
     dto.approvalLevelName = entity.approvalLevel?.name;
     dto.formattedCreatedAt = format(
       new Date(entity.createdAt),
