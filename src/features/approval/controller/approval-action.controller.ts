@@ -30,9 +30,8 @@ export class ApprovalActionController {
   async findAll(
     @Pagination() pagination: PaginationDto,
     @Query('approvalLevelId') approvalLevelId?: string,
-    @Query('entityId') entityId?: string,
   ) {
-    return this.approvalActionService.findAll(pagination, approvalLevelId, entityId);
+    return this.approvalActionService.findAll(pagination, approvalLevelId);
   }
 
   /**

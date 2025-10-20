@@ -11,8 +11,6 @@ import { CreateAssetRequestItemDto } from '../dtos/create-asset-request-item.dto
 import { UpdateAssetRequestItemDto } from '../dtos/update-asset-request-item.dto';
 import { AssetRequestEntity } from '../entity/asset-request.entity';
 import { AssetRequestItemResponseDto } from '../dtos/asset-request-item-response.dto';
-import { plainToInstance } from 'class-transformer';
-import { AssetRequestResponseDto } from '../dtos/asset-request-response.dto';
 import { BaseService } from '../../../../common/services/base-service';
 
 @Injectable()
