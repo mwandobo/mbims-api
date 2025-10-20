@@ -17,6 +17,7 @@ import {
 import { CreateApprovalActionDto } from '../dto/create-approval-action.dto';
 import { UpdateApprovalActionDto } from '../dto/update-approval-action.dto';
 import { ApprovalActionEnum } from '../enums/approval-action.enum';
+import { AssetRequestResponseDto } from '../../assets-management/asset-request/dtos/asset-request-response.dto';
 
 @Injectable()
 export class ApprovalActionService extends BaseService<ApprovalAction> {
@@ -36,9 +37,34 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
   /**
    * Get all approval actions with optional search
    */
+  // async findAll(
+  //   pagination: PaginationDto,
+  //   approvalLevel?: string,
+  //   entityId?:string
+  // ): Promise<PaginatedResponseDto<ApprovalAction>> {
+  //   const query = this.approvalActionRepository
+  //     .createQueryBuilder('action')
+  //     .leftJoinAndSelect('action.approvalLevel', 'approvalLevel')
+  //     .leftJoinAndSelect('action.user', 'user')
+  //     .take(pagination.limit)
+  //     .skip((pagination.page - 1) * pagination.limit);
+  //
+  //   if (search) {
+  //     query.andWhere('LOWER(action.name) LIKE LOWER(:search)', {
+  //       search: `%${search}%`,
+  //     });
+  //   }
+  //
+  //   const [data, total] = await query.getManyAndCount();
+  //   return new PaginatedResponseDto(data, total, pagination);
+  // }
+
+
+
   async findAll(
     pagination: PaginationDto,
-    search?: string,
+    approvalLevel?: string,
+    entityId?: string
   ): Promise<PaginatedResponseDto<ApprovalAction>> {
     const query = this.approvalActionRepository
       .createQueryBuilder('action')
@@ -47,15 +73,46 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       .take(pagination.limit)
       .skip((pagination.page - 1) * pagination.limit);
 
-    if (search) {
-      query.andWhere('LOWER(action.name) LIKE LOWER(:search)', {
-        search: `%${search}%`,
-      });
+    // 🔹 Filter by entityId (if provided)
+    if (entityId) {
+      query.andWhere('action.entityId = :entityId', { entityId });
+    }
+
+    // 🔹 Filter by approvalLevel (if provided)
+    if (approvalLevel) {
+      query.andWhere('approvalLevel.id = :approvalLevel', { approvalLevel });
     }
 
     const [data, total] = await query.getManyAndCount();
     return new PaginatedResponseDto(data, total, pagination);
   }
+
+
+
+  // Find all requests with pagination
+  // async findAll(
+  //   pagination: PaginationDto,
+  // ): Promise<PaginatedResponseDto<AssetRequestResponseDto>> {
+  //   const response = await this.findAllPaginated(
+  //     pagination,
+  //     ['user'], // load request items and their assets
+  //     { fields: [] },
+  //   );
+  //
+  //   return {
+  //     ...response,
+  //     data: response.data.map((user) => {
+  //       const dto = AssetRequestResponseDto.fromEntity(user);
+  //       dto['approvalStatus'] = (user as any).approvalStatus ?? 'N/A';
+  //       dto['shouldApprove'] = (user as any).shouldApprove ?? 'N/A';
+  //       dto['isMyLevelApproved'] = (user as any).isMyLevelApproved ?? 'N/A';
+  //       return dto;
+  //     }),
+  //   };
+  // }
+
+
+
 
   /**
    * Create a new approval action

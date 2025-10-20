@@ -497,8 +497,8 @@ Content-Type: application/json
   "status": "pending"
 }
 
-###
-GET {{base_url}}/approval-actions
+###asset_request_items
+GET {{base_url}}/approval-actions?entityId=325a7539-42b7-44c8-92f3-959bab64784c
 Authorization: Bearer {{token}}
 
 ###
