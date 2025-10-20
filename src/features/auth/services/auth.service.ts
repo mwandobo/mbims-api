@@ -36,8 +36,6 @@ export class AuthService {
   async validateUser(username: string, password: string): Promise<any> {
     const useLdap = this.configService.get('USE_LDAP_AUTH') === 'true';
 
-    // console.log('use ldap auth', useLdap);
-
     if (useLdap) {
       try {
         return await this.ldapAuthService.validateUser(username, password);
@@ -45,8 +43,8 @@ export class AuthService {
         throw new UnauthorizedException('LDAP Authentication failed');
       }
     } else {
-      // Return mock user in development
       const devUser = await this.usersService.findForAuth(username);
+
       if (!devUser) {
         const userPayload = {
           name: 'Dev User',
@@ -67,10 +65,7 @@ export class AuthService {
     if (!ldapUser) {
       return { message: 'Invalid credentials' };
     }
-
     let savedUser = await this.usersService.findForAuth(ldapUser.email);
-
-    // console.log('saved user', savedUser);
     if (!savedUser) {
       const userPayload = {
         name: ldapUser.displayName,
@@ -86,8 +81,6 @@ export class AuthService {
       sub: savedUser.id,
       roleId: savedUser.role?.id,
     };
-
-    console.log('payload', payload )
 
     const userNotificationBody = await this.notificationService.findByUserId(
       savedUser.id,

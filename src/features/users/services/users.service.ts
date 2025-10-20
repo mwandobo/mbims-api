@@ -133,8 +133,6 @@ export class UsersService extends BaseService<User> {
       user.department = department;
     }
 
-    console.log('updateUserDto.canReceiveEmail', updateUserDto.canReceiveEmail);
-
     // Update regular fields
     Object.assign(user, {
       name: updateUserDto.name,
@@ -156,10 +154,11 @@ export class UsersService extends BaseService<User> {
   }
 
   async findForAuth(email: string): Promise<User | undefined> {
-    return this.usersRepository.findOne({
+    const user = await this.usersRepository.findOne({
       where: { email },
       select: ['id', 'email', 'password'], // Explicitly include password
       relations: ['role.permissions'], // Load role relationship
     });
+    return user;
   }
 }

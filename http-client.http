@@ -3,7 +3,7 @@ POST {{base_url}}auth/login
 Content-Type: application/json
 
 {
-    "email": "bmwandobo@mwalimubank.co.tz",
+    "email": "bmwandobo@mwalimucommercial.co.tz",
     "password": "123456"
 }
 
