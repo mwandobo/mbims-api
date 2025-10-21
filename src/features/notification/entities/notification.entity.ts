@@ -4,8 +4,8 @@ import {
   Column,
   ManyToOne, JoinColumn,
 } from 'typeorm';
-import { BaseEntity } from '../../common/entities/base.entity';
-import { User } from '../../features/users/entities/user.entity';
+import { BaseEntity } from '../../../common/entities/base.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('notifications')
 export class Notification extends BaseEntity {

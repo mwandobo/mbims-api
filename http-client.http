@@ -514,3 +514,13 @@ Content-Type: application/json
   "description": "Approve Department #INV-2025-01 for payment",
   "approvalLevelId": "f76e1b78-6c2f-4045-ba3b-08b8769fa539"
 }
+
+###
+POST {{base_url}}/notifications/send-notifications
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "channel":"EMAIL"
+}
+

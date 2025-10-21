@@ -23,7 +23,7 @@ import { CronJobModule } from './common/cron-job/cron-job.module';
 import { PolicyModule } from './features/policy/policy.module';
 import { ActivityLogsModule } from './common/activity-logs/activity-logs.module';
 import { SettingsModule } from './features/settings/settings.module';
-import { NotificationModule } from './notification/notification.module';
+import { NotificationModule } from './features/notification/notification.module';
 import { PartyModule } from './features/party/party.module';
 import { ExcelComparisonModule } from './features/excel-comparison/excel-comparison.module';
 import { PositionModule } from './admnistration/position/position.module';
@@ -64,7 +64,8 @@ import { ApprovalsModule } from './features/approval/approvals.module';
     AssetCategoryModule,
     AssetModule,
     AssetRequestModule,
-    ApprovalsModule
+    ApprovalsModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [

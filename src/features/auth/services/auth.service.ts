@@ -7,7 +7,7 @@ import { LoginDto } from '../dtos/login.dto';
 import { LdapAuthService } from './ldap-auth.service';
 import { LdapResponceDto } from '../dtos/ldap-response.dto';
 import { ConfigService } from '@nestjs/config';
-import { NotificationService } from '../../../notification/notification.service';
+import { NotificationService } from '../../notification/notification.service';
 
 @Injectable()
 export class AuthService {

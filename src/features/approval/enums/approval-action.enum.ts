@@ -1,4 +1,4 @@
-// enums/approval-action.enum.ts
+// enums/notification-channels.enum.ts
 export enum ApprovalActionEnum {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',

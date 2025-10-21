@@ -1,11 +1,11 @@
 // notifications/notification.service.ts
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Notification } from './entities/notification.entity';
-import { User } from '../features/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 
 import { CreateNotificationDto } from './dtos/create-notification.dto';
 import { UpdateNotificationDto } from './dtos/update-notification.dto';
@@ -14,11 +14,13 @@ import { NotificationResponseDto } from './dtos/notification-response.dto';
 import {
   PaginationDto,
   PaginatedResponseDto,
-} from '../common/dtos/pagination.dto';
-import { BaseService } from '../common/services/base-service';
+} from '../../common/dtos/pagination.dto';
+import { BaseService } from '../../common/services/base-service';
+import { SendNotificationDto } from './dtos/send-notification.dto';
 
 @Injectable()
 export class NotificationService extends BaseService<Notification> {
+  private readonly logger = new Logger(NotificationService.name);
   constructor(
     @InjectRepository(Notification)
     private readonly notificationRepository: Repository<Notification>,
@@ -55,6 +57,31 @@ export class NotificationService extends BaseService<Notification> {
   async findOne(id: string): Promise<NotificationResponseDto> {
     const notification = await this.findById(id, ['user', 'notifiedPersonnel']);
     return NotificationResponseDto.fromNotification(notification);
+  }
+
+  async sendNotification(dto: SendNotificationDto): Promise<string> {
+    const { channel, ...rest } = dto;
+    // const { notifiedPersonnelId, ...rest2 } = notificationPayload;
+
+    this.logger.debug('channel', channel);
+
+    //   const [user, notifiedPersonnel] = await Promise.all([
+    //     this.findUser(userId),
+    //     notifiedPersonnelId ? this.findUser(notifiedPersonnelId) : null,
+    //   ]);
+    //
+    //   const notification = this.notificationRepository.create({
+    //     ...rest,
+    //     user,
+    //     notifiedPersonnel,
+    //   });
+    //
+    //   const saved = await this.notificationRepository.save(notification);
+    //
+    //   return NotificationResponseDto.fromNotification(saved);
+    // }
+
+    return 'notification sent successfully';
   }
 
   async create(dto: CreateNotificationDto): Promise<NotificationResponseDto> {

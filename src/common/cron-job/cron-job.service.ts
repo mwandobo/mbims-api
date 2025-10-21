@@ -6,8 +6,8 @@ import { User } from '../../features/users/entities/user.entity';
 import { EmailService } from '../mailer/email.service';
 import { Contract } from '../../features/contracts/entities/contracts.entity';
 import { SettingsService } from '../../features/settings/settings.service';
-import { NotificationService } from '../../notification/notification.service';
-import { CreateNotificationDto } from '../../notification/dtos/create-notification.dto';
+import { NotificationService } from '../../features/notification/notification.service';
+import { CreateNotificationDto } from '../../features/notification/dtos/create-notification.dto';
 import * as process from 'node:process';
 
 @Injectable()
@@ -27,14 +27,17 @@ export class CronJobService {
 
   private lastCronTime: string;
 
-  async onModuleInit() {
-    const cronTime =
-      (await this.settingsService.get('cron_schedule')) || '0 0 * * *';
-    this.scheduleJob(cronTime);
-    this.lastCronTime = cronTime;
 
-    setInterval(() => this.checkCronScheduleUpdates(), 60 * 1000);
-  }
+  // iTURNED OFF THE CRON JOB
+
+  // async onModuleInit() {
+  //   const cronTime =
+  //     (await this.settingsService.get('cron_schedule')) || '0 0 * * *';
+  //   this.scheduleJob(cronTime);
+  //   this.lastCronTime = cronTime;
+  //
+  //   setInterval(() => this.checkCronScheduleUpdates(), 60 * 1000);
+  // }
 
   private async checkCronScheduleUpdates() {
     const currentCronTime = await this.settingsService.get('cron_schedule');

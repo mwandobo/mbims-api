@@ -8,7 +8,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';  // Add this import
 import { ConfigModule } from '@nestjs/config';
 import { LdapAuthService } from './services/ldap-auth.service';
-import { NotificationModule } from '../../notification/notification.module';  // Add for ConfigService
+import { NotificationModule } from '../notification/notification.module';  // Add for ConfigService
 
 @Module({
   imports: [
