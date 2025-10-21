@@ -39,15 +39,12 @@ export class NotificationController {
     return this.notificationService.read(id);
   }
 
-
-
   @Get(':id')
   findOne(
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<NotificationResponseDto> {
     return this.notificationService.findOne(id);
   }
-
 
   @Post()
   @UseInterceptors(FileInterceptor('file')) // Handle file upload

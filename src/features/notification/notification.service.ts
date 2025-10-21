@@ -12,11 +12,13 @@ import { UpdateNotificationDto } from './dtos/update-notification.dto';
 import { NotificationResponseDto } from './dtos/notification-response.dto';
 
 import {
-  PaginationDto,
   PaginatedResponseDto,
+  PaginationDto,
 } from '../../common/dtos/pagination.dto';
 import { BaseService } from '../../common/services/base-service';
 import { SendNotificationDto } from './dtos/send-notification.dto';
+import { NotificationChannelsEnum } from './enums/notification-channels.enum';
+import { EmailService } from '../../common/mailer/email.service';
 
 @Injectable()
 export class NotificationService extends BaseService<Notification> {
@@ -26,6 +28,7 @@ export class NotificationService extends BaseService<Notification> {
     private readonly notificationRepository: Repository<Notification>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly emailService: EmailService,
   ) {
     super(notificationRepository);
   }
@@ -60,8 +63,21 @@ export class NotificationService extends BaseService<Notification> {
   }
 
   async sendNotification(dto: SendNotificationDto): Promise<string> {
-    const { channel, ...rest } = dto;
-    // const { notifiedPersonnelId, ...rest2 } = notificationPayload;
+    const { channel, template, notificationPayload ,...rest } = dto;
+    const { reciepient, ...rest2 } = notificationPayload;
+
+    switch (channel) {
+      case NotificationChannelsEnum.EMAIL:
+        const emailPayload = {
+          to: reciepient,
+          subject: 'string',
+          template,
+          context: { name: 'name' },
+        };
+        await this.emailService.sendEmail(emailPayload);
+
+        return 'email sent successfully';
+    }
 
     this.logger.debug('channel', channel);
 
@@ -85,17 +101,22 @@ export class NotificationService extends BaseService<Notification> {
   }
 
   async create(dto: CreateNotificationDto): Promise<NotificationResponseDto> {
-    const { userId, notifiedPersonnelId, ...rest } = dto;
+    const { userId, reciepient, ...rest } = dto;
 
-    const [user, notifiedPersonnel] = await Promise.all([
-      this.findUser(userId),
-      notifiedPersonnelId ? this.findUser(notifiedPersonnelId) : null,
-    ]);
+    // const [user, notifiedPersonnel] = await Promise.all([
+    //   this.findUser(userId),
+    //   notifiedPersonnelId ? this.findUser(notifiedPersonnelId) : null,
+    // ]);
+
+    // const notification = this.notificationRepository.create({
+    //   ...rest,
+    //   user,
+    //   reciepient,
+    // });
 
     const notification = this.notificationRepository.create({
       ...rest,
-      user,
-      notifiedPersonnel,
+      // notifiedPersonnel: reciepient,
     });
 
     const saved = await this.notificationRepository.save(notification);
@@ -109,17 +130,17 @@ export class NotificationService extends BaseService<Notification> {
   ): Promise<NotificationResponseDto> {
     const notification = await this.findById(id, ['user', 'notifiedPersonnel']);
 
-    const { userId, notifiedPersonnelId, ...rest } = dto;
+    const { userId, ...rest } = dto;
 
     if (userId) {
       notification.user = await this.findUser(userId);
     }
 
-    if (notifiedPersonnelId !== undefined) {
-      notification.notifiedPersonnel = notifiedPersonnelId
-        ? await this.findUser(notifiedPersonnelId)
-        : null;
-    }
+    // if (notifiedPersonnelId !== undefined) {
+    //   notification.notifiedPersonnel = notifiedPersonnelId
+    //     ? await this.findUser(notifiedPersonnelId)
+    //     : null;
+    // }
 
     Object.assign(notification, rest);
     const updated = await this.notificationRepository.save(notification);

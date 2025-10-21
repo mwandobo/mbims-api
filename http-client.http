@@ -521,6 +521,10 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "channel":"EMAIL"
+  "channel": "EMAIL",
+  "template": "create-level",
+  "notificationPayload": {
+    "reciepient": "breezojr@gmail.com"
+  }
 }
 
