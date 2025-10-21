@@ -117,6 +117,13 @@ export class ApprovalStatusUtil {
       return 'PENDING';
     }
 
+    if (actions.some((a) => a.action === ApprovalActionEnum.REJECTED)) {
+      this.logger.debug(
+        `There are rejected Actions returning REJECTED`,
+      );
+      return 'REJECTED';
+    }
+
     for (const level of levels) {
       const levelActions = actions.filter(
         (a) => a.approvalLevel.id === level.id,
@@ -133,13 +140,6 @@ export class ApprovalStatusUtil {
           `No actions found for level ${level.id} → returning PENDING`,
         );
         return 'PENDING';
-      }
-
-      if (levelActions.some((a) => a.action === ApprovalActionEnum.REJECTED)) {
-        this.logger.debug(
-          `Level ${level.id} contains REJECTED → returning REJECTED`,
-        );
-        return 'REJECTED';
       }
 
       if (!levelActions.some((a) => a.action === ApprovalActionEnum.APPROVED)) {

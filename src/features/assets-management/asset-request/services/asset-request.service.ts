@@ -71,25 +71,6 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
       user: { id: user.userId },
     });
     const savedRequest = await this.repo.save(request);
-
-    // const items: AssetRequestItemEntity[] = [];
-    // for (const asset_id of dto.asset_ids) {
-    //   const asset = await this.assetRepo.findOne({ where: { id: asset_id } });
-    //   if (!asset) {
-    //     throw new NotFoundException(`Asset with ID ${asset_id} not found`);
-    //   }
-    //
-    //   const item = this.itemRepo.create({
-    //     request: savedRequest,
-    //     asset,
-    //     quantity: 1, // default
-    //   });
-    //   items.push(await this.itemRepo.save(item));
-    // }
-
-    // savedRequest.items = items;
-
-    // ✅ keep using response DTO for output
     return AssetRequestResponseDto.fromEntity(savedRequest);
   }
 
@@ -103,8 +84,6 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
     if (!request) {
       throw new NotFoundException(`Asset request with ID ${id} not found`);
     }
-
-    console.log('user', user);
 
     const requestWithStatus = await this.attachApprovalInfo(
       request,
@@ -136,23 +115,6 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
     });
 
     const updatedAssetRequest = await this.repo.save(assetRequest);
-
-
-
-    // Remove old items
-    // await this.itemRepo.delete({ request: { id } });
-
-    // Add new items
-    // const items: AssetRequestItemEntity[] = [];
-    // for (const { asset_id, quantity } of dto.items) {
-    //   const asset = await this.assetRepo.findOne({ where: { id: asset_id } });
-    //   if (!asset) {
-    //     throw new NotFoundException(`Asset with ID ${asset_id} not found`);
-    //   }
-    //   const item = this.itemRepo.create({ request, asset, quantity });
-    //   items.push(await this.itemRepo.save(item));
-    // }
-
     // request.items = items;
     return AssetRequestResponseDto.fromEntity(updatedAssetRequest);
   }

@@ -18,6 +18,7 @@ import { LoggedInUserDto } from '../../../common/dtos/logged-in-user.dto';
 import { plainToInstance } from 'class-transformer';
 import { ApprovalAction } from '../entities/approval-action.entity';
 import { ApprovalActionCreationTypeEnum } from '../enums/approval-action-creation-type.enum';
+import { ApprovalActionEnum } from '../enums/approval-action.enum';
 
 @Injectable()
 export class ApprovalLevelService extends BaseService<ApprovalLevel> {
@@ -232,12 +233,44 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
 
       this.logger.log(`Found ${previousActions.length} previous actions`);
 
-      if (previousActions.length > 0) {
-        // ✅ Step 3: Duplicate them for the new level
+      // if (previousActions.length > 0) {
+      //   // ✅ Step 3: Duplicate them for the new level
+      //   const newActions = previousActions.map((act) =>
+      //     this.approvalActionRepository.create({
+      //       approvalLevel: { id: saved.id },
+      //       user: { id: user.userId }, // creator of the new level
+      //       name: act.name,
+      //       description: act.description,
+      //       action: act.action,
+      //       entityName: act.entityName,
+      //       entityId: act.entityId,
+      //       type: ApprovalActionCreationTypeEnum.AUTOMATIC,
+      //     }),
+      //   );
+      //
+      //   // ✅ Step 4: Save all new actions
+      //   await this.approvalActionRepository.save(newActions);
+      //   this.logger.log(
+      //     `Saved ${newActions.length} duplicated actions for new level id: ${saved.id}`,
+      //   );
+      // } else {
+      //   this.logger.log('No previous actions to duplicate');
+      // }
+
+
+      const allApproved = previousActions.every(
+        (act) => act.action === ApprovalActionEnum.APPROVED,
+      );
+
+      if (allApproved) {
+        this.logger.log(
+          `All previous actions are APPROVED — creating automatic actions for new level.`,
+        );
+
         const newActions = previousActions.map((act) =>
           this.approvalActionRepository.create({
             approvalLevel: { id: saved.id },
-            user: { id: user.userId }, // creator of the new level
+            user: { id: user.userId },
             name: act.name,
             description: act.description,
             action: act.action,
@@ -247,13 +280,14 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
           }),
         );
 
-        // ✅ Step 4: Save all new actions
         await this.approvalActionRepository.save(newActions);
         this.logger.log(
-          `Saved ${newActions.length} duplicated actions for new level id: ${saved.id}`,
+          `Saved ${newActions.length} automatic actions for new level id: ${saved.id}`,
         );
       } else {
-        this.logger.log('No previous actions to duplicate');
+        this.logger.log(
+          `Previous actions are not all APPROVED — skipping automatic action creation.`,
+        );
       }
     } else {
       this.logger.log('No previous approval level found');

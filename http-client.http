@@ -413,7 +413,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}/asset-requests/a047f576-dfd3-405d-8cc1-58352bf73f08
+GET {{base_url}}/asset-requests/325a7539-42b7-44c8-92f3-959bab64784b
 Authorization: Bearer {{token}}
 
 ###
