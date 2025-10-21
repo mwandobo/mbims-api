@@ -5,9 +5,14 @@ import { EmailService } from './email.service';
 import { ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+import { BullModule } from '@nestjs/bull';
+import { EmailProcessor } from './email.processor';
 
 @Module({
   imports: [
+    BullModule.registerQueue({
+      name: 'email',
+    }),
     MailerModule.forRootAsync({
 
 
@@ -60,7 +65,7 @@ import { join } from 'path';
       inject: [ConfigService],
     }),
   ],
-  providers: [EmailService],
+  providers: [EmailService, EmailProcessor],
   exports: [EmailService],
 })
 export class EmailModule {}

@@ -339,7 +339,6 @@ Content-Type: application/json
   "department_id": "06cfccc5-5301-440a-8d30-2ebb37195cf8"
 }
 
-
 ###
 GET {{base_url}}/asset-categories
 Authorization: Bearer {{token}}

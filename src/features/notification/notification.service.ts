@@ -81,22 +81,6 @@ export class NotificationService extends BaseService<Notification> {
 
     this.logger.debug('channel', channel);
 
-    //   const [user, notifiedPersonnel] = await Promise.all([
-    //     this.findUser(userId),
-    //     notifiedPersonnelId ? this.findUser(notifiedPersonnelId) : null,
-    //   ]);
-    //
-    //   const notification = this.notificationRepository.create({
-    //     ...rest,
-    //     user,
-    //     notifiedPersonnel,
-    //   });
-    //
-    //   const saved = await this.notificationRepository.save(notification);
-    //
-    //   return NotificationResponseDto.fromNotification(saved);
-    // }
-
     return 'notification sent successfully';
   }
 
