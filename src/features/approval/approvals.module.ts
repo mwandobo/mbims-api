@@ -16,6 +16,7 @@ import { ApprovalActionService } from './service/approval-action.service';
 import { ApprovalActionController } from './controller/approval-action.controller';
 import { ApprovalAction } from './entities/approval-action.entity';
 import { ApprovalStatusUtil } from './utils/approval-status.util';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ApprovalStatusUtil } from './utils/approval-status.util';
       User,
       ApprovalAction
     ]),
+    NotificationModule
   ], // must import the entity here
   controllers: [
     SysApprovalController,

@@ -19,6 +19,9 @@ import { plainToInstance } from 'class-transformer';
 import { ApprovalAction } from '../entities/approval-action.entity';
 import { ApprovalActionCreationTypeEnum } from '../enums/approval-action-creation-type.enum';
 import { ApprovalActionEnum } from '../enums/approval-action.enum';
+import { SendNotificationDto } from '../../notification/dtos/send-notification.dto';
+import { NotificationService } from '../../notification/notification.service';
+import { NotificationChannelsEnum } from '../../notification/enums/notification-channels.enum';
 
 @Injectable()
 export class ApprovalLevelService extends BaseService<ApprovalLevel> {
@@ -40,7 +43,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     @InjectRepository(ApprovalAction)
     private readonly approvalActionRepository: Repository<ApprovalAction>,
 
-    // private readonly notificationService: NotificationService,
+    private readonly notificationService: NotificationService,
   ) {
     super(approvalLevelRepository);
   }
@@ -77,103 +80,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     };
   }
 
-  /**
-   * Create an approval level
-   */
-
-  // async createApprovalLevel(
-  //   dto: CreateApprovalLevelDto,
-  //   userApprovalId: string,
-  //   user: LoggedInUserDto,
-  // ): Promise<ApprovalLevel> {
-  //   const approvalLevel = this.approvalLevelRepository.create({
-  //     name: dto.name,
-  //     description: dto.description,
-  //     level: dto.level,
-  //     user: { id: user.userId },
-  //   });
-  //
-  //   // Validate relations
-  //   const userApproval = await this.validateUserApproval(userApprovalId);
-  //   approvalLevel.userApproval = userApproval;
-  //
-  //   let role: Role | null = null;
-  //
-  //   if (dto.roleId) {
-  //     role = await this.validateRole(dto.roleId);
-  //     approvalLevel.role = role;
-  //   }
-  //
-  //   const saved = await this.approvalLevelRepository.save(approvalLevel);
-  //
-  //   // Send notifications
-  //   await this.sendCreateLevelNotification(saved, role);
-  //
-  //   return saved;
-  // }
-
-  // async createApprovalLevel(
-  //   dto: CreateApprovalLevelDto,
-  //   userApprovalId: string,
-  //   user: LoggedInUserDto,
-  // ): Promise<ApprovalLevel> {
-  //   const approvalLevel = this.approvalLevelRepository.create({
-  //     name: dto.name,
-  //     description: dto.description,
-  //     level: dto.level,
-  //     user: { id: user.userId },
-  //   });
-  //
-  //   // ✅ Validate relations
-  //   const userApproval = await this.validateUserApproval(userApprovalId);
-  //   approvalLevel.userApproval = userApproval;
-  //
-  //   let role: Role | null = null;
-  //   if (dto.roleId) {
-  //     role = await this.validateRole(dto.roleId);
-  //     approvalLevel.role = role;
-  //   }
-  //
-  //   // ✅ Save the new approval level first
-  //   const saved = await this.approvalLevelRepository.save(approvalLevel);
-  //
-  //   // ✅ Step 1: Check if previous level exists
-  //   const previousLevel = await this.approvalLevelRepository.findOne({
-  //     where: { userApproval: { id: userApproval.id } },
-  //     order: { createdAt: 'DESC' }, // ✅ get the latest created level
-  //   });
-  //
-  //   if (previousLevel) {
-  //     // ✅ Step 2: Get all actions from previous level
-  //     const previousActions = await this.approvalActionRepository.find({
-  //       where: { approvalLevel: { id: previousLevel.id } },
-  //     });
-  //
-  //     if (previousActions.length > 0) {
-  //       // ✅ Step 3: Duplicate them for the new level
-  //       const newActions = previousActions.map((act) =>
-  //         this.approvalActionRepository.create({
-  //           approvalLevel: { id: saved.id },
-  //           user: { id: user.userId }, // creator of the new level
-  //           name: act.name,
-  //           description: act.description,
-  //           action: act.action,
-  //           entityName: act.entityName,
-  //           entityId: act.entityId,
-  //         }),
-  //       );
-  //
-  //       // ✅ Step 4: Save all new actions
-  //       await this.approvalActionRepository.save(newActions);
-  //     }
-  //   }
-  //
-  //   // ✅ Send notifications
-  //   await this.sendCreateLevelNotification(saved, role);
-  //
-  //   return saved;
-  // }
-
   async createApprovalLevel(
     dto: CreateApprovalLevelDto,
     userApprovalId: string,
@@ -206,12 +112,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     const saved = await this.approvalLevelRepository.save(approvalLevel);
     this.logger.log(`Saved new approval level with id: ${saved.id}`);
 
-    // ✅ Step 1: Check if previous level exists
-    // const previousLevel = await this.approvalLevelRepository.findOne({
-    //   where: { userApproval: { id: userApproval.id } },
-    //   order: { createdAt: 'DESC' },
-    // });
-
     const previousLevel = await this.approvalLevelRepository.findOne({
       where: {
         userApproval: { id: userApproval.id },
@@ -232,31 +132,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       });
 
       this.logger.log(`Found ${previousActions.length} previous actions`);
-
-      // if (previousActions.length > 0) {
-      //   // ✅ Step 3: Duplicate them for the new level
-      //   const newActions = previousActions.map((act) =>
-      //     this.approvalActionRepository.create({
-      //       approvalLevel: { id: saved.id },
-      //       user: { id: user.userId }, // creator of the new level
-      //       name: act.name,
-      //       description: act.description,
-      //       action: act.action,
-      //       entityName: act.entityName,
-      //       entityId: act.entityId,
-      //       type: ApprovalActionCreationTypeEnum.AUTOMATIC,
-      //     }),
-      //   );
-      //
-      //   // ✅ Step 4: Save all new actions
-      //   await this.approvalActionRepository.save(newActions);
-      //   this.logger.log(
-      //     `Saved ${newActions.length} duplicated actions for new level id: ${saved.id}`,
-      //   );
-      // } else {
-      //   this.logger.log('No previous actions to duplicate');
-      // }
-
 
       const allApproved = previousActions.every(
         (act) => act.action === ApprovalActionEnum.APPROVED,
@@ -310,14 +185,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     if (!request) {
       throw new NotFoundException(`Asset request with ID ${id} not found`);
     }
-
-    // const requestWithStatus = await this.attachApprovalInfo(
-    //   request,
-    //   'AssetRequest',
-    //   user?.roleId,
-    // );
-
-    // return AssetRequestResponseDto.fromEntity(requestWithStatus);
     return plainToInstance(ApprovalLevel, request);
   }
 
@@ -379,10 +246,17 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     level: ApprovalLevel,
     role?: Role,
   ): Promise<void> {
+    // const context = {
+    //   levelName: level.name,
+    //   description: level.description,
+    //   status: level.status,
+    // };
+
     const context = {
       levelName: level.name,
       description: level.description,
       status: level.status,
+      year: new Date().getFullYear(),
     };
 
     let recipients: string[] = [];
@@ -396,14 +270,15 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
 
     if (!recipients.length) return;
 
-    // const dto: SendNotificationDto = {
-    //   channel: NotificationChannelsEnum.EMAIL,
-    //   notificationKeyword: NotificationKeywordEnum.CREATE_LEVEL,
-    //   recipients,
-    //   context,
-    // };
-    //
-    // await this.notificationService.sendNotification(dto);
+    const dto: SendNotificationDto = {
+      channel: NotificationChannelsEnum.EMAIL,
+      recipients,
+      context: context,
+      template: 'create-level',
+      subject: "New Level Created"
+    };
+
+    await this.notificationService.sendNotification(dto);
   }
 
   private async validateUserApproval(id: string): Promise<UserApproval> {

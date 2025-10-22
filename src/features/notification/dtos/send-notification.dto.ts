@@ -1,6 +1,11 @@
-import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { NotificationChannelsEnum } from '../enums/notification-channels.enum';
-import { CreateNotificationDto } from './create-notification.dto';
 
 export class SendNotificationDto {
   @IsEnum(NotificationChannelsEnum)
@@ -13,5 +18,37 @@ export class SendNotificationDto {
   @IsUUID()
   userId?: string;
 
-  notificationPayload: CreateNotificationDto;
+  @IsString()
+  subject?: string;
+
+  @IsString()
+  description?: string;
+
+  @IsString()
+  forName?: string;
+
+  @IsString()
+  forId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isRead?: boolean;
+
+  @IsOptional()
+  @IsString()
+  expiresAt?: string;
+
+  @IsOptional()
+  @IsUUID()
+  recipients?: string | string [];
+
+  @IsOptional()
+  @IsString()
+  redirectUrl?: string;
+
+  @IsOptional()
+  @IsString()
+  group?: string;
+
+  context?: any;
 }

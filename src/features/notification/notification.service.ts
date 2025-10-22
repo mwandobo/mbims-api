@@ -63,23 +63,28 @@ export class NotificationService extends BaseService<Notification> {
   }
 
   async sendNotification(dto: SendNotificationDto): Promise<string> {
-    const { channel, template, notificationPayload ,...rest } = dto;
-    const { reciepient, ...rest2 } = notificationPayload;
+    const {
+      channel,
+      template,
+      recipients,
+      subject,
+      context,
+      ...rest } = dto;
 
     switch (channel) {
       case NotificationChannelsEnum.EMAIL:
         const emailPayload = {
-          to: reciepient,
-          subject: 'string',
+          to: recipients,
+          subject,
           template,
-          context: { name: 'name' },
+          context,
         };
         await this.emailService.sendEmail(emailPayload);
 
         return 'email sent successfully';
     }
 
-    this.logger.debug('channel', channel);
+    this.logger.debug('template', template);
 
     return 'notification sent successfully';
   }

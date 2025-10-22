@@ -39,24 +39,29 @@ export class EmailService {
   async sendEmail(options: EmailOptions): Promise<string> {
     await this.enqueueEmail({
       to: options.to,
-      subject: 'Welcome to Our Service',
-      template: 'welcome',
-      context: { name: 'some Name' },
+      subject: options.subject,
+      template: options.template,
+      context: options.context
     });
 
     this.logger.log('Email is Added in the Queue')
-    return "Queue addedd successfull"
+    return 'Queue addedd successfull';
   }
 
   async sendEmailNow(options: EmailOptions): Promise<void> {
-    await this.mailerService.sendMail({
-      to: options.to,
-      subject: options.subject,
-      template: options.template,
-      context: options.context,
+    try {
+      await this.mailerService.sendMail({
+        to: options.to,
+        subject: options.subject,
+        template: options.template,
+        context: options.context,
     });
+      this.logger.log(`Email sent to ${options.to}`);
 
-    this.logger.log(`Email sent to ${options.to}`);
+    } catch (e) {
+      this.logger.error('Send failed:', e.message);
+    }
+
   }
 
   async enqueueEmail(options: EmailOptions): Promise<void> {
