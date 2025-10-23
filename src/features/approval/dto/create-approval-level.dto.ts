@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
@@ -18,11 +19,6 @@ export class CreateApprovalLevelDto {
   @IsOptional()
   @IsString()
   description?: string;
-
-  @ApiProperty({ example: 'LEVEL_1' })
-  @IsOptional()
-  @IsString()
-  level: string;
 
   @ApiProperty({ example: 'uuid-of-user-approval' })
   @IsNotEmpty()

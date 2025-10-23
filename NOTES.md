@@ -58,6 +58,57 @@ then pass entity and approval entityName
 ```
 
 
-then pass the the response to plain
+/**
+* Adjust approval level numbering intelligently.
+* - When creating: assigns next available level number.
+* - When deleting: shifts higher levels down by one.
+    */
+    private async updateApprovalLevelOrder(
+    userApprovalId: string,
+    action: 'CREATE' | 'DELETE',
+    affectedLevel?: ApprovalLevel,
+    ): Promise<number> {
+    const levels = await this.approvalLevelRepository.find({
+    where: { userApproval: { id: userApprovalId } },
+    order: { level: 'ASC' },
+    });
 
-    return plainToInstance(AssetRequestResponseDto, requestWithStatus);
+if (action === 'CREATE') {
+// Just return next level number
+return levels.length > 0 ? levels[levels.length - 1].level + 1 : 1;
+}
+
+if (action === 'DELETE' && affectedLevel) {
+const deletedLevelNum = affectedLevel.level;
+
+    // Shift all levels greater than deleted down by one
+    for (const lvl of levels) {
+      if (lvl.level > deletedLevelNum) {
+        lvl.level -= 1;
+        await this.approvalLevelRepository.save(lvl);
+      }
+    }
+
+    return deletedLevelNum;
+}
+
+return 1;
+}
+
+level: await this.updateApprovalLevelOrder(userApprovalId, 'CREATE'),
+
+async deleteApprovalLevel(id: string, soft = true): Promise<void> {
+const level = await this.approvalLevelRepository.findOne({
+where: { id },
+relations: ['userApproval'], // we need the relation for reordering
+});
+
+if (!level) {
+throw new NotFoundException(`ApprovalLevel with ID ${id} not found`);
+}
+
+await this.approvalLevelRepository.remove(level);
+
+// Reorder remaining levels
+await this.updateApprovalLevelOrder(level.userApproval.id, 'DELETE', level);
+}

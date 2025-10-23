@@ -24,7 +24,7 @@ export class ApprovalLevel extends BaseEntity {
   description: string;
 
   @Column({ nullable: true })
-  level: string;
+  level: number;
 
   @ManyToOne(() => UserApproval, (userApproval) => userApproval.id, {
     eager: true,

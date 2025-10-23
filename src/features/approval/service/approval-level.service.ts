@@ -1,4 +1,9 @@
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThan, Not, Repository } from 'typeorm';
 
@@ -22,6 +27,8 @@ import { ApprovalActionEnum } from '../enums/approval-action.enum';
 import { SendNotificationDto } from '../../notification/dtos/send-notification.dto';
 import { NotificationService } from '../../notification/notification.service';
 import { NotificationChannelsEnum } from '../../notification/enums/notification-channels.enum';
+import { ApprovalLevelResponseDto } from '../dto/approval-level-response.dto';
+import { ApprovalActionResponseDto } from '../dto/approval-action-response.dto';
 
 @Injectable()
 export class ApprovalLevelService extends BaseService<ApprovalLevel> {
@@ -54,7 +61,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
   async findAll(
     pagination: PaginationDto,
     userApprovalId: string,
-  ): Promise<PaginatedResponseDto<ApprovalLevel>> {
+  ): Promise<PaginatedResponseDto<ApprovalLevelResponseDto>> {
     const response = await this.findAllPaginated(
       pagination,
       ['userApproval', 'role', 'user'], // relations
@@ -69,14 +76,22 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       { userApproval: userApprovalId },
     );
 
+    // return {
+    //   ...response,
+    //   data: response.data.map((level) => ({
+    //     ...level,
+    //     userApprovalName: level.userApproval?.name ?? null,
+    //     roleName: level.role?.name ?? null,
+    //     userEmail: level.user?.email ?? null,
+    //   })),
+    // };
+
     return {
       ...response,
-      data: response.data.map((level) => ({
-        ...level,
-        userApprovalName: level.userApproval?.name ?? null,
-        roleName: level.role?.name ?? null,
-        userEmail: level.user?.email ?? null,
-      })),
+      data: response.data.map((user) => {
+        const dto = ApprovalLevelResponseDto.fromEntity(user);
+        return dto;
+      }),
     };
   }
 
@@ -89,24 +104,47 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       `Creating approval level for user ${user.userId} with name: ${dto.name}`,
     );
 
+    // const existingApprovalLevel = this.approvalLevelRepository.findOne({
+    //   where: dto.name,
+    // });
+
+    // let role: Role | null = null;
+    // if (dto.roleId) {
+    //   this.logger.log(`Validating role with id: ${dto.roleId}`);
+    //   role = await this.validateRole(dto.roleId);
+    //   approvalLevel.role = role;
+    // }
+
+    const role = await this.validateRole(dto.roleId);
+    const existingApprovalLevel = await this.approvalLevelRepository.findOne({
+      where: {
+        role: { id: dto.roleId },
+        userApproval: { id: userApprovalId },
+      },
+    });
+
+
+    if (existingApprovalLevel) {
+      this.logger.log(`Level Exists role with id: ${dto.roleId}`);
+      throw new BadRequestException(
+        `ApprovalLevel with Role ${role.name} exists`,
+      );
+    }
+
     const approvalLevel = this.approvalLevelRepository.create({
       name: dto.name,
       description: dto.description,
-      level: dto.level,
+      level: await this.updateApprovalLevelOrder(userApprovalId, 'CREATE'),
       user: { id: user.userId },
+      role: { id: dto.roleId },
     });
+
+
 
     // ✅ Validate relations
     this.logger.log(`Validating userApproval with id: ${userApprovalId}`);
     const userApproval = await this.validateUserApproval(userApprovalId);
     approvalLevel.userApproval = userApproval;
-
-    let role: Role | null = null;
-    if (dto.roleId) {
-      this.logger.log(`Validating role with id: ${dto.roleId}`);
-      role = await this.validateRole(dto.roleId);
-      approvalLevel.role = role;
-    }
 
     // ✅ Save the new approval level first
     const saved = await this.approvalLevelRepository.save(approvalLevel);
@@ -176,7 +214,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     return saved;
   }
 
-  async findOne(id: string): Promise<ApprovalLevel> {
+  async findOne(id: string): Promise<ApprovalLevelResponseDto> {
     const request = await this.approvalLevelRepository.findOne({
       where: { id },
       relations: ['role'],
@@ -185,7 +223,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     if (!request) {
       throw new NotFoundException(`Asset request with ID ${id} not found`);
     }
-    return plainToInstance(ApprovalLevel, request);
+    return plainToInstance(ApprovalLevelResponseDto, request);
   }
 
   /**
@@ -207,7 +245,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     Object.assign(level, {
       name: dto.name,
       description: dto.description,
-      level: dto.level,
       status: dto.status ?? level.status,
     });
 
@@ -231,12 +268,65 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
   /**
    * Delete (soft or hard)
    */
+  // async deleteApprovalLevel(id: string, soft = true): Promise<void> {
+  //   const level = await this.approvalLevelRepository.findOne({ where: { id } });
+  //   if (!level) {
+  //     throw new NotFoundException(`ApprovalLevel with ID ${id} not found`);
+  //   }
+  //   await this.approvalLevelRepository.remove(level);
+  // }
+
   async deleteApprovalLevel(id: string, soft = true): Promise<void> {
-    const level = await this.approvalLevelRepository.findOne({ where: { id } });
+    const level = await this.approvalLevelRepository.findOne({
+      where: { id },
+      relations: ['userApproval'], // we need the relation for reordering
+    });
+
     if (!level) {
       throw new NotFoundException(`ApprovalLevel with ID ${id} not found`);
     }
+
     await this.approvalLevelRepository.remove(level);
+
+    // Reorder remaining levels
+    await this.updateApprovalLevelOrder(level.userApproval.id, 'DELETE', level);
+  }
+
+  /**
+   * Adjust approval level numbering intelligently.
+   * - When creating: assigns next available level number.
+   * - When deleting: shifts higher levels down by one.
+   */
+  private async updateApprovalLevelOrder(
+    userApprovalId: string,
+    action: 'CREATE' | 'DELETE',
+    affectedLevel?: ApprovalLevel,
+  ): Promise<number> {
+    const levels = await this.approvalLevelRepository.find({
+      where: { userApproval: { id: userApprovalId } },
+      order: { level: 'ASC' },
+    });
+
+    if (action === 'CREATE') {
+      // Just return next level number
+      return levels.length > 0 ? levels[levels.length - 1].level + 1 : 1;
+    }
+
+    if (action === 'DELETE' && affectedLevel) {
+      const deletedLevelNum = affectedLevel.level;
+
+      // Shift all levels greater than deleted down by one
+      for (const lvl of levels) {
+        if (lvl.level > deletedLevelNum) {
+          lvl.level -= 1;
+          await this.approvalLevelRepository.save(lvl);
+        }
+      }
+
+      return deletedLevelNum;
+    }
+
+    return 1;
   }
 
   /**
@@ -275,7 +365,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       recipients,
       context: context,
       template: 'create-level',
-      subject: "New Level Created"
+      subject: 'New Level Created',
     };
 
     await this.notificationService.sendNotification(dto);

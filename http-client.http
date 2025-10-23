@@ -58,6 +58,16 @@ GET {{base_url}}roles/b6dd6cfd-e9d3-4e58-bc4e-f6ad01ddf5cc
 Authorization: Bearer {{token}}
 
 ###
+POST {{base_url}}roles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Finance"
+}
+
+
+###
 GET {{base_url}}roles/permissions/b6dd6cfd-e9d3-4e58-bc4e-f6ad01ddf5cc
 Authorization: Bearer {{token}}
 
@@ -478,7 +488,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}/approval-levels/57a5c3ba-284f-46d9-a311-a552a3f2a6a1
+GET {{base_url}}/approval-levels
 Authorization: Bearer {{token}}
 
 ###
@@ -487,14 +497,13 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "name": " Approval 5",
+  "name": " Approval 1",
   "description": "Handles testing approval workflow for Asset Request",
-  "level": "LEVEL_6",
-  "roleId": "c02d9613-31dc-462d-b43a-c539d5b8bd9e"
+  "roleId": "245701c8-02ca-45a3-aa41-fbea4760dc0a"
 }
 
 ###
-DELETE {{base_url}}/approval-levels/70859288-4b02-4946-9cd9-77cc3769adc6
+DELETE {{base_url}}/approval-levels/2f1685fa-87d8-46b0-9d62-f48f32a5d773
 Authorization: Bearer {{token}}
 
 
