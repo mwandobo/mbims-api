@@ -30,13 +30,11 @@ export class ApprovalStatusUtil {
    * (it has a SysApproval, UserApproval, and at least one level)
    */
   async hasApprovalMode(entityName: string): Promise<boolean> {
-    this.logger.debug(`Checking if ${entityName} has approval mode...`);
 
     const sys = await this.sysApprovalRepository.findOne({
       where: { entityName },
     });
     if (!sys) {
-      this.logger.debug(`No SysApproval found for entity ${entityName}`);
       return false;
     }
 
@@ -44,16 +42,12 @@ export class ApprovalStatusUtil {
       where: { sysApproval: { id: sys.id } },
     });
     if (!userApproval) {
-      this.logger.debug(`No UserApproval found for SysApproval ${sys.id}`);
       return false;
     }
 
     const levels = await this.approvalLevelRepository.find({
       where: { userApproval: { id: userApproval.id } },
     });
-    this.logger.debug(
-      `${levels.length} approval levels found for entity ${entityName}`,
-    );
 
     return levels.length > 0;
   }
@@ -69,15 +63,9 @@ export class ApprovalStatusUtil {
     entityName: string,
     entityId: string,
   ): Promise<'PENDING' | 'APPROVED' | 'REJECTED'> {
-    this.logger.debug(
-      `\n📄 Checking approval status for ${entityName} (ID: ${entityId})`,
-    );
 
     const userApproval = await this.getUserApproval(entityName);
     if (!userApproval) {
-      this.logger.debug(
-        `No UserApproval found for entity ${entityName} → returning PENDING`,
-      );
       return 'PENDING';
     }
 
@@ -85,20 +73,9 @@ export class ApprovalStatusUtil {
       where: { userApproval: { id: userApproval.id } },
     });
 
-
-    this.logger.debug(
-      `Found ${levels.length} approval levels for entity ${entityName}`,
-    );
-
     if (levels.length === 0) {
-      this.logger.debug('No approval levels found → returning PENDING');
       return 'PENDING';
     }
-
-    // const actions = await this.approvalActionRepository.find({
-    //   where: { entityName, entityId },
-    //   relations: ['approvalLevel'],
-    // });
 
     const actions = await this.approvalActionRepository.find({
       where: {
@@ -108,19 +85,11 @@ export class ApprovalStatusUtil {
       relations: ['approvalLevel'],
     });
 
-    this.logger.debug(
-      `Found ${actions.length} approval actions for entity ${entityName}`,
-    );
-
     if (actions.length === 0) {
-      this.logger.debug('No approval actions yet → returning PENDING');
       return 'PENDING';
     }
 
     if (actions.some((a) => a.action === ApprovalActionEnum.REJECTED)) {
-      this.logger.debug(
-        `There are rejected Actions returning REJECTED`,
-      );
       return 'REJECTED';
     }
 
@@ -136,36 +105,25 @@ export class ApprovalStatusUtil {
       );
 
       if (levelActions.length === 0) {
-        this.logger.debug(
-          `No actions found for level ${level.id} → returning PENDING`,
-        );
         return 'PENDING';
       }
 
       if (!levelActions.some((a) => a.action === ApprovalActionEnum.APPROVED)) {
-        this.logger.debug(
-          `Level ${level.id} not yet approved → returning PENDING`,
-        );
         return 'PENDING';
       }
     }
 
-    this.logger.debug(
-      `✅ All levels approved for ${entityName} → returning APPROVED`,
-    );
     return 'APPROVED';
   }
 
   private async getUserApproval(
     entityName: string,
   ): Promise<UserApproval | null> {
-    this.logger.debug(`Fetching UserApproval for entity ${entityName}...`);
 
     const sys = await this.sysApprovalRepository.findOne({
       where: { entityName },
     });
     if (!sys) {
-      this.logger.debug(`No SysApproval found for entity ${entityName}`);
       return null;
     }
 
@@ -174,13 +132,9 @@ export class ApprovalStatusUtil {
     });
 
     if (!userApproval) {
-      this.logger.debug(`No UserApproval found for SysApproval ID: ${sys.id}`);
       return null;
     }
 
-    this.logger.debug(
-      `✅ Found UserApproval ID: ${userApproval.id} for ${entityName}`,
-    );
     return userApproval;
   }
 
@@ -266,16 +220,6 @@ export class ApprovalStatusUtil {
       where: { userApproval: { id: userApprovalId } },
     });
   }
-
-  // async getActions(approvalLevelId: string, entityId: string) {
-  //   return this.approvalActionRepository.find({
-  //     where: {
-  //       approvalLevel: { id: approvalLevelId },
-  //       entityId,
-  //     },
-  //     relations: ['approvalLevel'],
-  //   });
-  // }
 
   async getActions(entityId: string, levelIds: string[]) {
     return this.approvalActionRepository.find({

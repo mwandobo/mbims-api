@@ -93,7 +93,6 @@ export class RequestedAssetsService extends BaseService<AssetRequestItemEntity> 
     dto: CreateAssetRequestItemDto,
     requestId: string,
   ): Promise<AssetRequestItemResponseDto> {
-    console.log('requestId', requestId);
     // Fetch the request entity
     const request = await this.requestRepo.findOne({
       where: { id: requestId },

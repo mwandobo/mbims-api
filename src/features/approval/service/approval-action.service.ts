@@ -46,32 +46,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
    * Get all approval actions with optional search
    */
 
-  // async findAll(
-  //   pagination: PaginationDto,
-  //   approvalLevel?: string,
-  //   entityId?: string
-  // ): Promise<PaginatedResponseDto<ApprovalAction>> {
-  //   const query = this.approvalActionRepository
-  //     .createQueryBuilder('action')
-  //     .leftJoinAndSelect('action.approvalLevel', 'approvalLevel')
-  //     .leftJoinAndSelect('action.user', 'user')
-  //     .take(pagination.limit)
-  //     .skip((pagination.page - 1) * pagination.limit);
-  //
-  //   // 🔹 Filter by entityId (if provided)
-  //   if (entityId) {
-  //     query.andWhere('action.entityId = :entityId', { entityId });
-  //   }
-  //
-  //   // 🔹 Filter by approvalLevel (if provided)
-  //   if (approvalLevel) {
-  //     query.andWhere('approvalLevel.id = :approvalLevel', { approvalLevel });
-  //   }
-  //
-  //   const [data, total] = await query.getManyAndCount();
-  //   return new PaginatedResponseDto(data, total, pagination);
-  // }
-
   // Find all requests with pagination
   async findAll(
     pagination: PaginationDto,
@@ -192,7 +166,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     const nextLevel = await this.approvalLevelRepository.findOne({
       where: {
         userApproval: { id: approvalLevel.userApproval.id },
-        createdAt: MoreThan(approvalLevel.createdAt),
+        level: MoreThan(approvalLevel.level),
       },
       order: { createdAt: 'ASC' },
       relations: ['role'],
@@ -210,17 +184,48 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     const role = nextLevel.role;
 
     // Mock email template data (this can be customized per entity)
+    // const context = {
+    //   userName: user.name,
+    //   requestId: dto.entityId,
+    //   requestDescription: dto.description,
+    //   currentLevelName: approvalLevel.name,
+    //   nextLevelName: nextLevel.name,
+    //   submittedBy: user.email,
+    //   submissionDate: new Date().toLocaleDateString(),
+    //   priority: 'Normal',
+    //   year: new Date().getFullYear(),
+    //   priorityColor: 'blue',
+    //   approvalLink: `https://your-system.com/approvals/${dto.entityId}`,
+    // };
+
     const context = {
-      userName: user.name,
-      requestId: dto.entityId,
-      requestDescription: dto.description,
-      currentLevelName: approvalLevel.name,
-      nextLevelName: nextLevel.name,
-      submittedBy: user.email,
-      submissionDate: new Date().toLocaleDateString(),
-      priority: 'Normal',
+      // 👤 Recipient details
+      userName: user?.name || 'Approver',
+
+      // 🧾 Request details
+      requestId: dto?.entityId || 'N/A',
+      requestDescription: dto?.description || 'No description provided',
+
+      // 🔁 Level details
+      currentLevelName: approvalLevel?.name || 'Current Level',
+      nextLevelName: nextLevel?.name || 'Final Level',
+
+      // 📤 Submission info
+      submittedBy: user?.email || 'system@yourdomain.com',
+      submissionDate: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+
+      // ⚙️ Priority setup
+      priority:  'Normal',
+      priorityColor: 'blue',
+      dueDate :'Not specified',
       year: new Date().getFullYear(),
-      approvalLink: `https://your-system.com/approvals/${dto.entityId}`,
+
+      // 🔗 Action link
+      approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
     };
 
     let recipients: string[] = [];
