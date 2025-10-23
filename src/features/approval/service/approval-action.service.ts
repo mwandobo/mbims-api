@@ -1,10 +1,11 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { MoreThan, Repository } from 'typeorm';
 
 import { ApprovalAction } from '../entities/approval-action.entity';
 import { ApprovalLevel } from '../entities/approval-level.entity';
@@ -18,9 +19,14 @@ import { CreateApprovalActionDto } from '../dto/create-approval-action.dto';
 import { UpdateApprovalActionDto } from '../dto/update-approval-action.dto';
 import { ApprovalActionEnum } from '../enums/approval-action.enum';
 import { ApprovalActionResponseDto } from '../dto/approval-action-response.dto';
+import { ApprovalLevelService } from './approval-level.service';
+import { SendNotificationDto } from '../../notification/dtos/send-notification.dto';
+import { NotificationChannelsEnum } from '../../notification/enums/notification-channels.enum';
+import { NotificationService } from '../../notification/notification.service';
 
 @Injectable()
 export class ApprovalActionService extends BaseService<ApprovalAction> {
+  private readonly logger = new Logger(ApprovalLevelService.name)
   constructor(
     @InjectRepository(ApprovalAction)
     private readonly approvalActionRepository: Repository<ApprovalAction>,
@@ -30,6 +36,8 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    private readonly notificationService: NotificationService,
   ) {
     super(approvalActionRepository);
   }
@@ -92,11 +100,53 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
   /**
    * Create a new approval action
    */
+  // async create(
+  //   dto: CreateApprovalActionDto,
+  //   currentUser: any,
+  // ): Promise<ApprovalAction> {
+  //
+  //   const approvalLevel = await this.approvalLevelRepository.findOne({
+  //     where: { id: dto.approvalLevelId },
+  //   });
+  //   if (!approvalLevel) throw new NotFoundException('Approval Level not found');
+  //
+  //   // Check duplicate
+  //   const existing = await this.approvalActionRepository.findOne({
+  //     where: {
+  //       approvalLevel: { id: dto.approvalLevelId },
+  //       entityId: dto.entityId
+  //     },
+  //   });
+  //   if (existing)
+  //     throw new BadRequestException(
+  //       'Approval Action has been done for this level and entity',
+  //     );
+  //
+  //   const user = await this.userRepository.findOne({
+  //     where: { id: currentUser.userId },
+  //   });
+  //
+  //   if (!user) throw new NotFoundException('User not found');
+  //
+  //   const action = this.approvalActionRepository.create({
+  //     approvalLevel: { id: approvalLevel.id }, // only the ID
+  //     user: { id: user.id },
+  //     name: dto.name,
+  //     description: dto.description,
+  //     action: dto.action as ApprovalActionEnum, // ✅ cast string to enum
+  //     entityName: dto.entityName,
+  //     entityId: dto.entityId,
+  //   });
+  //
+  //   return this.approvalActionRepository.save(action);
+  // }
+
+
+
   async create(
     dto: CreateApprovalActionDto,
     currentUser: any,
   ): Promise<ApprovalAction> {
-
     const approvalLevel = await this.approvalLevelRepository.findOne({
       where: { id: dto.approvalLevelId },
     });
@@ -106,7 +156,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     const existing = await this.approvalActionRepository.findOne({
       where: {
         approvalLevel: { id: dto.approvalLevelId },
-        entityId: dto.entityId
+        entityId: dto.entityId,
       },
     });
     if (existing)
@@ -117,21 +167,114 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     const user = await this.userRepository.findOne({
       where: { id: currentUser.userId },
     });
-
     if (!user) throw new NotFoundException('User not found');
 
     const action = this.approvalActionRepository.create({
-      approvalLevel: { id: approvalLevel.id }, // only the ID
+      approvalLevel: { id: approvalLevel.id },
       user: { id: user.id },
       name: dto.name,
       description: dto.description,
-      action: dto.action as ApprovalActionEnum, // ✅ cast string to enum
+      action: dto.action as ApprovalActionEnum,
       entityName: dto.entityName,
       entityId: dto.entityId,
     });
 
-    return this.approvalActionRepository.save(action);
+    const createdAction = await this.approvalActionRepository.save(action);
+
+    // =====================================================
+    // 🔹 Sending notifications to next level approvers
+    // =====================================================
+
+    this.logger.log(
+      `Checking for next approval level after level ${approvalLevel.id} (${approvalLevel.name})...`,
+    );
+
+    const nextLevel = await this.approvalLevelRepository.findOne({
+      where: {
+        userApproval: { id: approvalLevel.userApproval.id },
+        createdAt: MoreThan(approvalLevel.createdAt),
+      },
+      order: { createdAt: 'ASC' },
+      relations: ['role'],
+    });
+
+    if (!nextLevel) {
+      this.logger.log('No next approval level found. Notification skipped.');
+      return createdAction;
+    }
+
+    this.logger.log(
+      `Next level found: ${nextLevel.name} (Role: ${nextLevel.role?.name || 'N/A'})`,
+    );
+
+    const role = nextLevel.role;
+
+    // Mock email template data (this can be customized per entity)
+    const context = {
+      userName: user.name,
+      requestId: dto.entityId,
+      requestDescription: dto.description,
+      currentLevelName: approvalLevel.name,
+      nextLevelName: nextLevel.name,
+      submittedBy: user.email,
+      submissionDate: new Date().toLocaleDateString(),
+      priority: 'Normal',
+      year: new Date().getFullYear(),
+      approvalLink: `https://your-system.com/approvals/${dto.entityId}`,
+    };
+
+    let recipients: string[] = [];
+
+    if (role) {
+      const users = await this.userRepository.find({
+        where: { role: { id: role.id } },
+      });
+
+      recipients = users.map((u) => u.email);
+      this.logger.log(
+        `Users found for role "${role.name}": ${recipients.length} → [${recipients.join(', ')}]`,
+      );
+    }
+
+    if (recipients.length === 0) {
+      this.logger.warn(
+        `No recipients found for next approval level "${nextLevel.name}".`,
+      );
+      return createdAction;
+    }
+
+    try {
+      const notificationDto: SendNotificationDto = {
+        channel: NotificationChannelsEnum.EMAIL,
+        recipients,
+        context,
+        template: 'next-approval',
+        subject: `Approval Required: ${dto.entityName}`,
+      };
+
+      this.logger.log(
+        `Sending email notification for next level "${nextLevel.name}" to ${recipients.length} users...`,
+      );
+
+      await this.notificationService.sendNotification(notificationDto);
+
+      this.logger.log(
+        `✅ Successfully sent approval notification to next level approvers: [${recipients.join(', ')}]`,
+      );
+    } catch (error) {
+      this.logger.error(
+        `❌ Failed to send notification for next level ${nextLevel.name}: ${error.message}`,
+      );
+    }
+
+    return createdAction;
   }
+
+
+
+
+
+
 
   /**
    * Update an existing approval action
