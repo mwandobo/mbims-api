@@ -183,21 +183,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
 
     const role = nextLevel.role;
 
-    // Mock email template data (this can be customized per entity)
-    // const context = {
-    //   userName: user.name,
-    //   requestId: dto.entityId,
-    //   requestDescription: dto.description,
-    //   currentLevelName: approvalLevel.name,
-    //   nextLevelName: nextLevel.name,
-    //   submittedBy: user.email,
-    //   submissionDate: new Date().toLocaleDateString(),
-    //   priority: 'Normal',
-    //   year: new Date().getFullYear(),
-    //   priorityColor: 'blue',
-    //   approvalLink: `https://your-system.com/approvals/${dto.entityId}`,
-    // };
-
     const context = {
       // 👤 Recipient details
       userName: user?.name || 'Approver',
