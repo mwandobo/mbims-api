@@ -24,13 +24,18 @@ export class EmailService {
 
   // ✅ Queued send entrypoint
   async sendEmail(options: EmailOptions): Promise<string> {
-    this.logger.debug(`[sendEmail] Request received → to=${options.to}, subject="${options.subject}", template="${options.template}"`);
+    this.logger.debug(
+      `[sendEmail] Request received → to=${options.to}, subject="${options.subject}", template="${options.template}"`,
+    );
     try {
       await this.enqueueEmail(options);
       this.logger.log('[sendEmail] Email added to queue successfully.');
       return 'Email successfully queued';
     } catch (e) {
-      this.logger.error(`[sendEmail] Failed to enqueue email: ${e.message}`, e.stack);
+      this.logger.error(
+        `[sendEmail] Failed to enqueue email: ${e.message}`,
+        e.stack,
+      );
       throw e;
     }
   }
@@ -44,7 +49,9 @@ export class EmailService {
       // Show config info (optional)
       const transportHost = this.configService.get('MAIL_HOST');
       const fromAddress = this.configService.get('MAIL_FROM');
-      this.logger.verbose(`[sendEmailNow] Using transport host: ${transportHost}`);
+      this.logger.verbose(
+        `[sendEmailNow] Using transport host: ${transportHost}`,
+      );
       this.logger.verbose(`[sendEmailNow] From address: ${fromAddress}`);
 
       // Try sending
@@ -55,8 +62,12 @@ export class EmailService {
         context: options.context,
       });
 
-      this.logger.log(`[sendEmailNow] ✅ Email sent successfully to: ${options.to}`);
-      this.logger.debug(`[sendEmailNow] Mailer result: ${JSON.stringify(result, null, 2)}`);
+      this.logger.log(
+        `[sendEmailNow] ✅ Email sent successfully to: ${options.to}`,
+      );
+      this.logger.debug(
+        `[sendEmailNow] Mailer result: ${JSON.stringify(result, null, 2)}`,
+      );
     } catch (e) {
       this.logger.error(`[sendEmailNow] ❌ Send failed: ${e.message}`);
       this.logger.error(`[sendEmailNow] Stack trace:\n${e.stack}`);
@@ -66,7 +77,9 @@ export class EmailService {
   // ✅ Queue handler
   async enqueueEmail(options: EmailOptions): Promise<void> {
     const recipients = Array.isArray(options.to) ? options.to : [options.to];
-    this.logger.debug(`[enqueueEmail] Preparing to queue ${recipients.length} recipient(s)`);
+    this.logger.debug(
+      `[enqueueEmail] Preparing to queue ${recipients.length} recipient(s)`,
+    );
 
     for (const to of recipients) {
       this.logger.debug(`[enqueueEmail] Queuing → ${to}`);
@@ -78,7 +91,9 @@ export class EmailService {
       });
     }
 
-    this.logger.log(`[enqueueEmail] Queued ${recipients.length} email(s) for sending.`);
+    this.logger.log(
+      `[enqueueEmail] Queued ${recipients.length} email(s) for sending.`,
+    );
   }
 
   // ✅ Example email

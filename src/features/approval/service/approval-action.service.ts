@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { In, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 
 import { ApprovalAction } from '../entities/approval-action.entity';
 import { ApprovalLevel } from '../entities/approval-level.entity';
@@ -376,40 +376,235 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     await this.approvalActionRepository.remove(action);
   }
 
+  // private async handleApprovalNotifications(
+  //   dto: CreateApprovalActionDto,
+  //   approvalLevel: ApprovalLevel,
+  //   entityCreator: User,
+  //   user: User,
+  // ): Promise<void> {
+  //   if (dto.action === ApprovalActionEnum.REJECTED) {
+  //     const context = {
+  //       userName: entityCreator?.name || 'User',
+  //       requestId: dto?.entityId || 'N/A',
+  //       requestDescription: dto?.description || 'No description provided',
+  //       rejectedBy: user?.name || 'System',
+  //       rejectionDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+  //       priority: 'Normal',
+  //       priorityColor: 'red',
+  //       approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
+  //       year: new Date().getFullYear(),
+  //     };
+  //
+  //     const notificationDto: SendNotificationDto = {
+  //       channel: NotificationChannelsEnum.EMAIL,
+  //       recipients: entityCreator.email,
+  //       context,
+  //       template: 'approval-rejected',
+  //       subject: `Your Request Has Been Rejected: ${dto.entityName}`,
+  //     };
+  //
+  //     await this.notificationService.sendNotification(notificationDto);
+  //     this.logger.log(
+  //       `❌ Rejection email sent to request creator (${entityCreator.email})`,
+  //     );
+  //     return;
+  //   }
+  //
+  //   this.logger.log(
+  //     `Checking for next approval level after level ${approvalLevel.id} (${approvalLevel.name})...`,
+  //   );
+  //
+  //   const nextLevel = await this.approvalLevelRepository.findOne({
+  //     where: {
+  //       userApproval: { id: approvalLevel.userApproval.id },
+  //       level: MoreThan(approvalLevel.level),
+  //     },
+  //     order: { createdAt: 'ASC' },
+  //     relations: ['role'],
+  //   });
+  //
+  //   if (!nextLevel) {
+  //     this.logger.log(
+  //       'No next approval level found. Sending final approval email...',
+  //     );
+  //
+  //     const context = {
+  //       userName: entityCreator?.name || 'User',
+  //       requestId: dto?.entityId || 'N/A',
+  //       requestDescription: dto?.description || 'No description provided',
+  //       finalLevelName: approvalLevel?.name || 'Final Approval',
+  //       approvedBy: user?.name || 'System',
+  //       approvalDate: new Date().toLocaleDateString('en-US', {
+  //         year: 'numeric',
+  //         month: 'long',
+  //         day: 'numeric',
+  //       }),
+  //       priority: 'Normal',
+  //       priorityColor: 'blue',
+  //       approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
+  //       year: new Date().getFullYear(),
+  //     };
+  //
+  //     try {
+  //       await this.notificationService.sendNotification({
+  //         channel: NotificationChannelsEnum.EMAIL,
+  //         recipients: entityCreator.email,
+  //         context,
+  //         template: 'request-approved',
+  //         subject: `Approval Complete For Entity: ${dto.entityName}`,
+  //       });
+  //
+  //       this.logger.log(
+  //         `✅ Sent final approval notification to ${entityCreator.email}`,
+  //       );
+  //     } catch (error) {
+  //       this.logger.error(
+  //         `❌ Failed to send final approval email: ${error.message}`,
+  //       );
+  //     }
+  //
+  //     return;
+  //   }
+  //
+  //   // 📨 If there’s a next level, send next-level notification
+  //   this.logger.log(
+  //     `Next level found: ${nextLevel.name} (Role: ${nextLevel.role?.name || 'N/A'})`,
+  //   );
+  //
+  //   const role = nextLevel.role;
+  //
+  //   const context = {
+  //     userName: user?.name || 'Approver',
+  //     requestId: dto?.entityId || 'N/A',
+  //     requestDescription: dto?.description || 'No description provided',
+  //     currentLevelName: approvalLevel?.name || 'Current Level',
+  //     nextLevelName: nextLevel?.name || 'Final Level',
+  //     submittedBy: user?.email || 'system@yourdomain.com',
+  //     submissionDate: new Date().toLocaleDateString('en-US', {
+  //       year: 'numeric',
+  //       month: 'long',
+  //       day: 'numeric',
+  //     }),
+  //     priority: 'Normal',
+  //     priorityColor: 'blue',
+  //     dueDate: 'Not specified',
+  //     year: new Date().getFullYear(),
+  //     approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
+  //   };
+  //
+  //   let recipients: string[] = [];
+  //
+  //   if (role) {
+  //     const users = await this.userRepository.find({
+  //       where: { role: { id: role.id } },
+  //     });
+  //
+  //     recipients = users.map((u) => u.email);
+  //     this.logger.log(
+  //       `Users found for role "${role.name}": ${recipients.length} → [${recipients.join(', ')}]`,
+  //     );
+  //   }
+  //
+  //   if (recipients.length === 0) {
+  //     this.logger.warn(
+  //       `No recipients found for next approval level "${nextLevel.name}".`,
+  //     );
+  //     return;
+  //   }
+  //
+  //   try {
+  //     await this.notificationService.sendNotification({
+  //       channel: NotificationChannelsEnum.EMAIL,
+  //       recipients,
+  //       context,
+  //       template: 'next-approval',
+  //       subject: `Approval Required: ${dto.entityName}`,
+  //     });
+  //
+  //     this.logger.log(
+  //       `✅ Successfully sent next-level notification to: [${recipients.join(', ')}]`,
+  //     );
+  //   } catch (error) {
+  //     this.logger.error(
+  //       `❌ Failed to send next-level notification: ${error.message}`,
+  //     );
+  //   }
+  // }
+
+
   private async handleApprovalNotifications(
     dto: CreateApprovalActionDto,
     approvalLevel: ApprovalLevel,
     entityCreator: User,
     user: User,
   ): Promise<void> {
+    // 🟥 CASE: Request Rejected
     if (dto.action === ApprovalActionEnum.REJECTED) {
+      // 1️⃣ Find all previous levels for this approval
+      const previousLevels = await this.approvalLevelRepository.find({
+        where: {
+          userApproval: { id: approvalLevel.userApproval.id },
+          level: LessThanOrEqual(approvalLevel.level),
+        },
+        relations: ['role'],
+        order: { level: 'ASC' },
+      });
+
+      // 2️⃣ Extract all role IDs from previous levels
+      const previousRoleIds = previousLevels
+        .filter((lvl) => lvl.role)
+        .map((lvl) => lvl.role.id);
+
+      // 3️⃣ Fetch all users who have those roles
+      const previousApprovers = await this.userRepository.find({
+        where: { role: { id: In(previousRoleIds) } },
+      });
+
+      const recipients = [
+        entityCreator.email, // creator
+        ...previousApprovers.map((u) => u.email),
+      ].filter(Boolean);
+
+      // 4️⃣ Prepare the email context
       const context = {
         userName: entityCreator?.name || 'User',
         requestId: dto?.entityId || 'N/A',
         requestDescription: dto?.description || 'No description provided',
         rejectedBy: user?.name || 'System',
-        rejectionDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+        rejectionDate: new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
         priority: 'Normal',
         priorityColor: 'red',
         approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
         year: new Date().getFullYear(),
       };
 
-      const notificationDto: SendNotificationDto = {
-        channel: NotificationChannelsEnum.EMAIL,
-        recipients: entityCreator.email,
-        context,
-        template: 'approval-rejected',
-        subject: `Your Request Has Been Rejected: ${dto.entityName}`,
-      };
+      // 5️⃣ Send notifications
+      try {
+        await this.notificationService.sendNotification({
+          channel: NotificationChannelsEnum.EMAIL,
+          recipients,
+          context,
+          template: 'approval-rejected',
+          subject: `Request Rejected: ${dto.entityName}`,
+        });
 
-      await this.notificationService.sendNotification(notificationDto);
-      this.logger.log(
-        `❌ Rejection email sent to request creator (${entityCreator.email})`,
-      );
+        this.logger.log(
+          `❌ Rejection email sent to creator (${entityCreator.email}) and previous approvers: [${recipients.join(', ')}]`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `❌ Failed to send rejection notifications: ${error.message}`,
+        );
+      }
+
       return;
     }
 
+    // 🟦 CASE: Proceed with normal next-level or final approval
     this.logger.log(
       `Checking for next approval level after level ${approvalLevel.id} (${approvalLevel.name})...`,
     );
@@ -419,15 +614,12 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
         userApproval: { id: approvalLevel.userApproval.id },
         level: MoreThan(approvalLevel.level),
       },
-      order: { createdAt: 'ASC' },
+      order: { level: 'ASC' },
       relations: ['role'],
     });
 
     if (!nextLevel) {
-      this.logger.log(
-        'No next approval level found. Sending final approval email...',
-      );
-
+      // ✅ Send final approval email to the creator
       const context = {
         userName: entityCreator?.name || 'User',
         requestId: dto?.entityId || 'N/A',
@@ -530,4 +722,5 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       );
     }
   }
+
 }
