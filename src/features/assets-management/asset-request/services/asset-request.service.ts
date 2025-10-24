@@ -78,7 +78,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   async findOne(id: string, user?: any): Promise<AssetRequestResponseDto> {
     const request = await this.repo.findOne({
       where: { id },
-      relations: ['user', 'items', 'items.asset', 'items.asset.category'],
+      relations: ['user'],
     });
 
     if (!request) {
@@ -91,7 +91,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
       user?.roleId,
     );
 
-    // return AssetRequestResponseDto.fromEntity(requestWithStatus);
+    // const result = AssetRequestResponseDto.fromEntity(requestWithStatus);
     return plainToInstance(AssetRequestResponseDto, requestWithStatus);
   }
 

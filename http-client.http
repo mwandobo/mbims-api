@@ -3,7 +3,7 @@ POST {{base_url}}auth/login
 Content-Type: application/json
 
 {
-    "email": "bmwandobo@mwalimucommercial.co.tz",
+    "email": "bmwandobo@mwalimubank.co.tz",
     "password": "123456"
 }
 
@@ -408,11 +408,11 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}/asset-requests
+GET {{base_url}}/asset-requests/5bd820d1-9af2-43c7-87a9-21c361cab73f
 Authorization: Bearer {{token}}
 
 ###
-PATCH {{base_url}}/asset-requests/325a7539-42b7-44c8-92f3-959bab64784b
+PATCH {{base_url}}/asset-requests/5bd820d1-9af2-43c7-87a9-21c361cab73f
 Authorization: Bearer {{token}}
 Content-Type: application/json
 

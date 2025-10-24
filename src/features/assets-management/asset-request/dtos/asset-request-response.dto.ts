@@ -52,6 +52,9 @@ export class AssetRequestResponseDto {
   createdBy: string;
 
   @Expose()
+  userId: string;
+
+  @Expose()
   updatedAt: Date;
 
   static fromEntity(entity: AssetRequestEntity): AssetRequestResponseDto {
@@ -63,6 +66,7 @@ export class AssetRequestResponseDto {
     dto.createdAt = entity.createdAt;
     dto.updatedAt = entity.updatedAt;
     dto.createdBy = entity.user?.name ?? "";
+    dto.userId = entity.user?.id ?? "";
     dto.formattedCreatedAt = format(
       new Date(entity.createdAt),
       'dd/MM/yyyy',

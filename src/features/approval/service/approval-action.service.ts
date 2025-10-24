@@ -26,7 +26,7 @@ import { NotificationService } from '../../notification/notification.service';
 
 @Injectable()
 export class ApprovalActionService extends BaseService<ApprovalAction> {
-  private readonly logger = new Logger(ApprovalLevelService.name)
+  private readonly logger = new Logger(ApprovalLevelService.name);
   constructor(
     @InjectRepository(ApprovalAction)
     private readonly approvalActionRepository: Repository<ApprovalAction>,
@@ -54,9 +54,8 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     const response = await this.findAllPaginated(
       pagination,
       ['user', 'approvalLevel'], // load request items and their assets
-      { fields: ['entityId'],
-      },
-      { approvalLevel: approvalLevel }
+      { fields: ['entityId'] },
+      { approvalLevel: approvalLevel },
     );
 
     return {
@@ -67,55 +66,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       }),
     };
   }
-
-
-
-
-  /**
-   * Create a new approval action
-   */
-  // async create(
-  //   dto: CreateApprovalActionDto,
-  //   currentUser: any,
-  // ): Promise<ApprovalAction> {
-  //
-  //   const approvalLevel = await this.approvalLevelRepository.findOne({
-  //     where: { id: dto.approvalLevelId },
-  //   });
-  //   if (!approvalLevel) throw new NotFoundException('Approval Level not found');
-  //
-  //   // Check duplicate
-  //   const existing = await this.approvalActionRepository.findOne({
-  //     where: {
-  //       approvalLevel: { id: dto.approvalLevelId },
-  //       entityId: dto.entityId
-  //     },
-  //   });
-  //   if (existing)
-  //     throw new BadRequestException(
-  //       'Approval Action has been done for this level and entity',
-  //     );
-  //
-  //   const user = await this.userRepository.findOne({
-  //     where: { id: currentUser.userId },
-  //   });
-  //
-  //   if (!user) throw new NotFoundException('User not found');
-  //
-  //   const action = this.approvalActionRepository.create({
-  //     approvalLevel: { id: approvalLevel.id }, // only the ID
-  //     user: { id: user.id },
-  //     name: dto.name,
-  //     description: dto.description,
-  //     action: dto.action as ApprovalActionEnum, // ✅ cast string to enum
-  //     entityName: dto.entityName,
-  //     entityId: dto.entityId,
-  //   });
-  //
-  //   return this.approvalActionRepository.save(action);
-  // }
-
-
 
   async create(
     dto: CreateApprovalActionDto,
@@ -143,6 +93,23 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     });
     if (!user) throw new NotFoundException('User not found');
 
+
+    if (!dto.entityCreatorId) {
+      this.logger.error('entityCreatorId is missing in DTO');
+      throw new BadRequestException('Missing entityCreatorId');
+    }
+    this.logger.debug('DTO content:', dto);
+    this.logger.debug('Entity Creator ID:', dto.entityCreatorId);
+    const entityCreator = await this.userRepository.findOne({
+      where: { id: dto.entityCreatorId },
+    });
+
+    this.logger.debug(dto.entityCreatorId);
+    this.logger.debug(entityCreator);
+    if (!entityCreator){
+      throw new NotFoundException('User who Created the Request Not Found');
+    }
+
     const action = this.approvalActionRepository.create({
       approvalLevel: { id: approvalLevel.id },
       user: { id: user.id },
@@ -151,6 +118,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       action: dto.action as ApprovalActionEnum,
       entityName: dto.entityName,
       entityId: dto.entityId,
+      entityCreatorId: dto.entityCreatorId,
     });
 
     const createdAction = await this.approvalActionRepository.save(action);
@@ -174,6 +142,44 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
 
     if (!nextLevel) {
       this.logger.log('No next approval level found. Notification skipped.');
+
+      const context = {
+        userName: entityCreator?.name || 'User',
+        requestId: dto?.entityId || 'N/A',
+        requestDescription: dto?.description || 'No description provided',
+        finalLevelName: approvalLevel?.name || 'Final Approval',
+        approvedBy: user?.name || 'System',
+        approvalDate: new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+        priority: 'Normal',
+        priorityColor: 'blue',
+        approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
+        year: new Date().getFullYear(),
+      };
+
+      try {
+        const notificationDto: SendNotificationDto = {
+          channel: NotificationChannelsEnum.EMAIL,
+          recipients: entityCreator.email,
+          context,
+          template: 'request-approved',
+          subject: `Approval Complete For Entity: ${dto.entityName}`,
+        };
+
+        await this.notificationService.sendNotification(notificationDto);
+
+        this.logger.log(
+          `✅ Successfully sent approval notification to entity Creator: ${entityCreator.name}`,
+        );
+      } catch (error) {
+        this.logger.error(
+          `❌ Failed to send notification for next level ${nextLevel.name}: ${error.message}`,
+        );
+      }
+
       return createdAction;
     }
 
@@ -204,9 +210,9 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       }),
 
       // ⚙️ Priority setup
-      priority:  'Normal',
+      priority: 'Normal',
       priorityColor: 'blue',
-      dueDate :'Not specified',
+      dueDate: 'Not specified',
       year: new Date().getFullYear(),
 
       // 🔗 Action link
@@ -259,12 +265,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
 
     return createdAction;
   }
-
-
-
-
-
-
 
   /**
    * Update an existing approval action

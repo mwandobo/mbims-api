@@ -24,6 +24,11 @@ export class CreateApprovalActionDto {
   @IsString()
   entityName: string;
 
+  @ApiProperty({ example: 'entity-creator-id' })
+  @IsNotEmpty()
+  @IsString()
+  entityCreatorId: string;
+
   @ApiProperty({ example: 'uuid-of-entity' })
   @IsNotEmpty()
   @IsUUID()

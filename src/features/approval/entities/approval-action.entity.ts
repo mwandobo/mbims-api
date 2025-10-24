@@ -45,6 +45,9 @@ export class ApprovalAction extends BaseEntity {
   @Column({ nullable: false })
   entityId: string;
 
+  @Column({ nullable: false })
+  entityCreatorId: string;
+
   @Column({ nullable: true })
   remark: string;
 
