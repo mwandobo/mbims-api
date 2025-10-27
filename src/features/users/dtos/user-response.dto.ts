@@ -31,6 +31,9 @@ export class UserResponseDto {
   departmentName: string;
 
   @Expose()
+  positionName: string;
+
+  @Expose()
   approvalStatus: string;
 
   @Expose()
@@ -46,6 +49,7 @@ export class UserResponseDto {
     dto.role_id = (user.role as any)?.id || ''; // in case role is an object
     dto.department_id = (user.department as any)?.id || '';
     dto.departmentName = user.department?.name || '';
+    dto.positionName = user.position?.name;
     dto.roleName = user.role?.name || '';
     dto.approvalStatus = ''; // or your computed logic
     return dto;

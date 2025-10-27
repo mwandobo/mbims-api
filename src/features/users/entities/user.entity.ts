@@ -11,6 +11,7 @@ import { BaseEntity } from '../../../common/entities/base.entity';
 import { DepartmentEntity } from '../../../admnistration/department/entities/department.entity';
 import { AssetRequestItemEntity } from '../../assets-management/asset-request/entity/asset-request-item.entity';
 import { AssetRequestEntity } from '../../assets-management/asset-request/entity/asset-request.entity';
+import { PositionEntity } from '../../../admnistration/position/entities/position.entity';
 
 @Entity('users')
 export class User extends BaseEntity {
@@ -36,6 +37,10 @@ export class User extends BaseEntity {
   @ManyToOne(() => DepartmentEntity, (department) => department.users)
   @JoinColumn({ name: 'department_id' })
   department: DepartmentEntity;
+
+  @ManyToOne(() => PositionEntity, (position) => position.users)
+  @JoinColumn({ name: 'position_id' })
+  position: PositionEntity;
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
