@@ -7,7 +7,6 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { DashboardService } from './dashboard.service';
-import { ContractStatsDto } from './dtos/contract-stats.dto';
 
 @ApiTags('dashboard')
 @ApiBearerAuth()
@@ -16,9 +15,9 @@ import { ContractStatsDto } from './dtos/contract-stats.dto';
 export class DashboardController {
   constructor(private readonly service: DashboardService) {}
 
-  @Get('contracts-stats')
+  @Get('overall-stats')
   async contractsStats(): Promise<any> {
-    return this.service.getContractsStats();
+    return this.service.getOverallStats();
   }
 
 }

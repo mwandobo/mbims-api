@@ -5,64 +5,33 @@ import { Repository, LessThan } from 'typeorm';
 import { Contract } from '../contracts/entities/contracts.entity';
 import { Licence } from '../lincence/entities/licence.entity';
 import { Policy } from '../policy/entities/policy.entity';
+import { AssetCategoryEntity } from '../assets-management/asset-category/asset-category.entity';
+import { AssetEntity } from '../assets-management/asset/asset.entity';
+import { AssetRequestEntity } from '../assets-management/asset-request/entity/asset-request.entity';
 
 @Injectable()
 export class DashboardService {
   constructor(
-    @InjectRepository(Contract)
-    private readonly contractsRepository: Repository<Contract>,
-    @InjectRepository(Licence)
-    private readonly licenceRepository: Repository<Licence>,
-    @InjectRepository(Policy)
-    private readonly policyRepository: Repository<Policy>,
+    @InjectRepository(AssetCategoryEntity)
+    private readonly assetCategoryRepository: Repository<AssetCategoryEntity>,
+    @InjectRepository(AssetEntity)
+    private readonly assetRepository: Repository<AssetEntity>,
+    @InjectRepository(AssetRequestEntity)
+    private readonly assetRequestRepository: Repository<AssetRequestEntity>,
   ) {}
 
-  async getContractsStats() {
-    const now = new Date();
-
-    const thirtyDaysFromNow = new Date(
-      now.setDate(now.getDate() + 30),
-    ).toISOString();
-
-    const [
-      totalContracts,
-      activeContracts,
-      expiringSoonContracts,
-      totalLicenses,
-      activeLicenses,
-      expiredLicenses,
-      totalPolicies,
-      activePolicies,
-      expiredPolicies,
-    ] = await Promise.all([
-      this.contractsRepository.count(),
-      this.contractsRepository.count({ where: { status: 'pending' } }),
-      this.contractsRepository.count({
-        where: {
-          status: 'active',
-          endDate: LessThan(thirtyDaysFromNow),
-        },
-      }),
-      this.licenceRepository.count(),
-      this.licenceRepository.count({ where: { status: 'pending' } }),
-      this.licenceRepository.count({ where: { status: 'expired' } }),
-
-      this.policyRepository.count(),
-      this.policyRepository.count({ where: { status: 'pending' } }),
-      this.policyRepository.count({ where: { status: 'expired' } }),
-    ]);
+  async getOverallStats() {
+    const [totalAssetCategories, totalAssets, totalAssetRequests] =
+      await Promise.all([
+        this.assetCategoryRepository.count(),
+        this.assetRepository.count(),
+        this.assetRequestRepository.count(),
+      ]);
 
     return {
-      total_contracts: totalContracts,
-      activeContracts,
-      expiringSoon: expiringSoonContracts,
-      totalLicenses,
-      activeLicenses,
-      expiredLicenses,
-      totalPolicies,
-      activePolicies,
-      expiredPolicies,
+      totalAssetCategories,
+      totalAssets,
+      totalAssetRequests,
     };
   }
-
 }
