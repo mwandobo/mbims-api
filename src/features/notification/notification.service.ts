@@ -19,8 +19,6 @@ import { BaseService } from '../../common/services/base-service';
 import { SendNotificationDto } from './dtos/send-notification.dto';
 import { NotificationChannelsEnum } from './enums/notification-channels.enum';
 import { EmailService } from '../../common/mailer/email.service';
-import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
-import { AuthenticatedRequest } from '../../common/types/express-request.type';
 
 @Injectable()
 export class NotificationService extends BaseService<Notification> {
@@ -49,7 +47,7 @@ export class NotificationService extends BaseService<Notification> {
           notifiedPersonnel: ['name', 'email'],
         },
       },
-      { user: user.userId },
+      { notifiedPersonnel: user.userId },
     );
 
     return {
