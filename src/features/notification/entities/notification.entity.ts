@@ -2,7 +2,8 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne, JoinColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { BaseEntity } from '../../../common/entities/base.entity';
 import { User } from '../../users/entities/user.entity';
@@ -15,13 +16,13 @@ export class Notification extends BaseEntity {
   @Column()
   title: string;
 
-  @Column('text')
+  @Column({ type: 'text', nullable: true })
   description: string;
 
-  @Column({ name: 'for_name', length: 255 })
+  @Column({ name: 'for_name', length: 255, nullable: true })
   forName: string;
 
-  @Column({ name: 'for_id', length: 255 })
+  @Column({ name: 'for_id', length: 255, nullable: true })
   forId: string;
 
   @Column({ name: 'is_read', default: false })

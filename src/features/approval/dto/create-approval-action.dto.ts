@@ -34,6 +34,11 @@ export class CreateApprovalActionDto {
   @IsUUID()
   entityId: string;
 
+  @ApiProperty({ example: 'redirect-url' })
+  @IsOptional()
+  @IsUUID()
+  redirectUrl: string;
+
   @ApiProperty({ example: 'Approve invoice for payment' })
   @IsOptional()
   @IsString()

@@ -19,7 +19,7 @@ import { NotificationResponseDto } from './dtos/notification-response.dto';
 import { Pagination } from '../../common/decorators/pagination.decorator';
 import { PaginationDto } from '../../common/dtos/pagination.dto';
 import { AuthenticatedRequest } from '../../common/types/express-request.type';
-import { QueryParameter } from '../../common/decorators/query-parameters.decorator';
+// import { QueryParameter } from '../../common/decorators/query-parameters.decorator';
 import { SendNotificationDto } from './dtos/send-notification.dto';
 
 @ApiTags('notifications')
@@ -28,8 +28,11 @@ export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   @Get()
-  async findAll(@Pagination() pagination: PaginationDto) {
-    return this.notificationService.findAll(pagination);
+  async findAll(
+    @Pagination() pagination: PaginationDto,
+    @Req() req: AuthenticatedRequest, // Use the custom type here
+  ) {
+    return this.notificationService.findAll(pagination, req.user);
   }
 
   @Get(':id/read')

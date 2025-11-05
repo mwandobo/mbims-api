@@ -29,6 +29,7 @@ import { NotificationService } from '../../notification/notification.service';
 import { NotificationChannelsEnum } from '../../notification/enums/notification-channels.enum';
 import { ApprovalLevelResponseDto } from '../dto/approval-level-response.dto';
 import { ApprovalActionResponseDto } from '../dto/approval-action-response.dto';
+import { SysApproval } from '../entities/system-approval.entity';
 
 @Injectable()
 export class ApprovalLevelService extends BaseService<ApprovalLevel> {
@@ -37,6 +38,9 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
   constructor(
     @InjectRepository(ApprovalLevel)
     private readonly approvalLevelRepository: Repository<ApprovalLevel>,
+
+    @InjectRepository(SysApproval)
+    private readonly sysApprovalRepository: Repository<SysApproval>,
 
     @InjectRepository(UserApproval)
     private readonly userApprovalRepository: Repository<UserApproval>,
@@ -104,17 +108,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       `Creating approval level for user ${user.userId} with name: ${dto.name}`,
     );
 
-    // const existingApprovalLevel = this.approvalLevelRepository.findOne({
-    //   where: dto.name,
-    // });
-
-    // let role: Role | null = null;
-    // if (dto.roleId) {
-    //   this.logger.log(`Validating role with id: ${dto.roleId}`);
-    //   role = await this.validateRole(dto.roleId);
-    //   approvalLevel.role = role;
-    // }
-
     const role = await this.validateRole(dto.roleId);
     const existingApprovalLevel = await this.approvalLevelRepository.findOne({
       where: {
@@ -122,7 +115,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
         userApproval: { id: userApprovalId },
       },
     });
-
 
     if (existingApprovalLevel) {
       this.logger.log(`Level Exists role with id: ${dto.roleId}`);
@@ -138,8 +130,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       user: { id: user.userId },
       role: { id: dto.roleId },
     });
-
-
 
     // ✅ Validate relations
     this.logger.log(`Validating userApproval with id: ${userApprovalId}`);
@@ -180,6 +170,10 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
           `All previous actions are APPROVED — creating automatic actions for new level.`,
         );
 
+        this.logger.log(
+          `All previous actions are APPROVED — creating automatic actions for new level.`,
+        );
+
         const newActions = previousActions.map((act) =>
           this.approvalActionRepository.create({
             approvalLevel: { id: saved.id },
@@ -190,6 +184,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
             entityName: act.entityName,
             entityId: act.entityId,
             type: ApprovalActionCreationTypeEnum.AUTOMATIC,
+            entityCreatorId: previousActions[0]?.entityCreatorId,
           }),
         );
 
@@ -336,11 +331,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     level: ApprovalLevel,
     role?: Role,
   ): Promise<void> {
-    // const context = {
-    //   levelName: level.name,
-    //   description: level.description,
-    //   status: level.status,
-    // };
+    this.logger.log(`Approval level passed level=${JSON.stringify(level)}`);
 
     const context = {
       levelName: level.name,
@@ -363,9 +354,13 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     const dto: SendNotificationDto = {
       channel: NotificationChannelsEnum.EMAIL,
       recipients,
+      forName: level.userApproval?.sysApproval?.entityName,
+      forId: level.id,
       context: context,
       template: 'create-level',
       subject: 'New Level Created',
+      description: `New Level created name ${level.name} for Approval ${level.userApproval?.name}`,
+      redirectUrl: ''
     };
 
     await this.notificationService.sendNotification(dto);

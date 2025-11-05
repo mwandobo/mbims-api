@@ -26,8 +26,8 @@ export class CreateNotificationDto {
   userId?: string;
 
   @IsOptional()
-  @IsUUID()
-  reciepient?: string;
+  @IsString()
+  recipientId?: string;
 
   @IsOptional()
   @IsString()

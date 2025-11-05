@@ -21,6 +21,7 @@ import { ApprovalActionResponseDto } from '../dto/approval-action-response.dto';
 import { ApprovalLevelService } from './approval-level.service';
 import { NotificationChannelsEnum } from '../../notification/enums/notification-channels.enum';
 import { NotificationService } from '../../notification/notification.service';
+import { SendNotificationDto } from '../../notification/dtos/send-notification.dto';
 
 @Injectable()
 export class ApprovalActionService extends BaseService<ApprovalAction> {
@@ -227,13 +228,27 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
 
       // 5️⃣ Send notifications
       try {
-        await this.notificationService.sendNotification({
+        // await this.notificationService.sendNotification({
+        //   channel: NotificationChannelsEnum.EMAIL,
+        //   recipients,
+        //   context,
+        //   template: 'approval-rejected',
+        //   subject: `Request Rejected: ${dto.entityName}`,
+        // });
+
+        const notificationDto: SendNotificationDto = {
           channel: NotificationChannelsEnum.EMAIL,
           recipients,
-          context,
+          forName: approvalLevel.userApproval?.sysApproval?.entityName,
+          forId: approvalLevel.id,
+          context: context,
           template: 'approval-rejected',
           subject: `Request Rejected: ${dto.entityName}`,
-        });
+          description: `Approval For Entity ${dto.entityName} has been Rejected`,
+          redirectUrl: dto.redirectUrl
+        };
+
+        await this.notificationService.sendNotification(notificationDto);
 
         this.logger.log(
           `❌ Rejection email sent to creator (${entityCreator.email}) and previous approvers: [${recipients.join(', ')}]`,
@@ -281,13 +296,27 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       };
 
       try {
-        await this.notificationService.sendNotification({
+        // await this.notificationService.sendNotification({
+        //   channel: NotificationChannelsEnum.EMAIL,
+        //   recipients: entityCreator.email,
+        //   context,
+        //   template: 'request-approved',
+        //   subject: `Approval Complete For Entity: ${dto.entityName}`,
+        // });
+
+        const notificationDto: SendNotificationDto = {
           channel: NotificationChannelsEnum.EMAIL,
           recipients: entityCreator.email,
-          context,
+          forName: approvalLevel.userApproval?.sysApproval?.entityName,
+          forId: approvalLevel.id,
+          context: context,
           template: 'request-approved',
           subject: `Approval Complete For Entity: ${dto.entityName}`,
-        });
+          description: `Approval request for the entity ${dto.entityName} has been completed`,
+          redirectUrl: dto.redirectUrl
+        };
+
+        await this.notificationService.sendNotification(notificationDto);
 
         this.logger.log(
           `✅ Sent final approval notification to ${entityCreator.email}`,
@@ -348,13 +377,28 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     }
 
     try {
-      await this.notificationService.sendNotification({
+      // await this.notificationService.sendNotification({
+      //   channel: NotificationChannelsEnum.EMAIL,
+      //   recipients,
+      //   context,
+      //   template: 'next-approval',
+      //   subject: `Approval Required: ${dto.entityName}`,
+      // });
+
+
+      const notificationDto: SendNotificationDto = {
         channel: NotificationChannelsEnum.EMAIL,
         recipients,
-        context,
+        forName: approvalLevel.userApproval?.sysApproval?.entityName,
+        forId: approvalLevel.id,
+        context: context,
         template: 'next-approval',
         subject: `Approval Required: ${dto.entityName}`,
-      });
+        description: `Approval Required for ${dto.entityName}`,
+        redirectUrl: dto.redirectUrl
+      };
+
+      await this.notificationService.sendNotification(notificationDto);
 
       this.logger.log(
         `✅ Successfully sent next-level notification to: [${recipients.join(', ')}]`,

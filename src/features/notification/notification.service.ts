@@ -19,6 +19,8 @@ import { BaseService } from '../../common/services/base-service';
 import { SendNotificationDto } from './dtos/send-notification.dto';
 import { NotificationChannelsEnum } from './enums/notification-channels.enum';
 import { EmailService } from '../../common/mailer/email.service';
+import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
+import { AuthenticatedRequest } from '../../common/types/express-request.type';
 
 @Injectable()
 export class NotificationService extends BaseService<Notification> {
@@ -35,11 +37,11 @@ export class NotificationService extends BaseService<Notification> {
 
   async findAll(
     pagination: PaginationDto,
+    user: any
   ): Promise<PaginatedResponseDto<NotificationResponseDto>> {
     const response = await this.findAllPaginated(
       pagination,
       ['user', 'notifiedPersonnel'], // relations to load
-
       {
         fields: ['title', 'description'], // searchable fields
         relations: {
@@ -47,6 +49,7 @@ export class NotificationService extends BaseService<Notification> {
           notifiedPersonnel: ['name', 'email'],
         },
       },
+      { user: user.userId },
     );
 
     return {
@@ -67,9 +70,15 @@ export class NotificationService extends BaseService<Notification> {
       channel,
       template,
       recipients,
+      userId,
       subject,
       context,
-      ...rest } = dto;
+      description,
+      forName,
+      forId,
+      redirectUrl,
+      ...rest
+    } = dto;
 
     switch (channel) {
       case NotificationChannelsEnum.EMAIL:
@@ -80,8 +89,23 @@ export class NotificationService extends BaseService<Notification> {
           context,
         };
         await this.emailService.sendEmail(emailPayload);
+    }
 
-        return 'email sent successfully';
+    const _recipients = Array.isArray(recipients) ? recipients : [recipients];
+
+    for (const recipient of _recipients) {
+      this.logger.debug(`[enqueueEmail] Queuing → ${recipient}`);
+      const createNotificationPayload = {
+        title: subject,
+        description: description,
+        forName: forName,
+        forId: forId,
+        userId: userId,
+        recipientId: recipient,
+        redirectUrl: redirectUrl,
+        group: '',
+      };
+      await this.create(createNotificationPayload);
     }
 
     this.logger.debug('template', template);
@@ -90,22 +114,17 @@ export class NotificationService extends BaseService<Notification> {
   }
 
   async create(dto: CreateNotificationDto): Promise<NotificationResponseDto> {
-    const { userId, reciepient, ...rest } = dto;
+    const { userId, recipientId, ...rest } = dto;
 
-    // const [user, notifiedPersonnel] = await Promise.all([
-    //   this.findUser(userId),
-    //   notifiedPersonnelId ? this.findUser(notifiedPersonnelId) : null,
-    // ]);
-
-    // const notification = this.notificationRepository.create({
-    //   ...rest,
-    //   user,
-    //   reciepient,
-    // });
+    const [user, notifiedPersonnel] = await Promise.all([
+      this.findUser(userId),
+      recipientId ? this.findUser(recipientId, 'email') : null,
+    ]);
 
     const notification = this.notificationRepository.create({
       ...rest,
-      // notifiedPersonnel: reciepient,
+      user,
+      notifiedPersonnel: notifiedPersonnel,
     });
 
     const saved = await this.notificationRepository.save(notification);
@@ -213,8 +232,17 @@ export class NotificationService extends BaseService<Notification> {
     return await this.notificationRepository.save(notification);
   }
 
-  private async findUser(userId: string): Promise<User> {
-    console.log('passed user', userId);
+  private async findUser(userId: string, type?: string): Promise<User> {
+    if (type === 'email') {
+      const user = await this.userRepository.findOne({
+        where: { email: userId },
+      });
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
+      return user;
+    }
+
     const user = await this.userRepository.findOne({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException(`User with ID ${userId} not found`);
