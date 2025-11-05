@@ -142,12 +142,6 @@ export class NotificationService extends BaseService<Notification> {
       notification.user = await this.findUser(userId);
     }
 
-    // if (notifiedPersonnelId !== undefined) {
-    //   notification.notifiedPersonnel = notifiedPersonnelId
-    //     ? await this.findUser(notifiedPersonnelId)
-    //     : null;
-    // }
-
     Object.assign(notification, rest);
     const updated = await this.notificationRepository.save(notification);
 
