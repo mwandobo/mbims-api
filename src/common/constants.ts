@@ -1,0 +1,11 @@
+export const APP_CONSTANTS = {
+  APP_NAME: 'My Awesome App',
+  DEFAULT_PAGE_SIZE: 20,
+  MAX_UPLOAD_SIZE_MB: 50,
+};
+
+export const FRONT_END_ROUTE_CONSTANTS = {
+  CREATE_APPROVAL_LEVEL_REDIRECT_URl: 'administration/approvals',
+  DEFAULT_PAGE_SIZE: 20,
+  MAX_UPLOAD_SIZE_MB: 50,
+};

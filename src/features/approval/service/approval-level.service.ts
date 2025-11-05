@@ -28,8 +28,9 @@ import { SendNotificationDto } from '../../notification/dtos/send-notification.d
 import { NotificationService } from '../../notification/notification.service';
 import { NotificationChannelsEnum } from '../../notification/enums/notification-channels.enum';
 import { ApprovalLevelResponseDto } from '../dto/approval-level-response.dto';
-import { ApprovalActionResponseDto } from '../dto/approval-action-response.dto';
 import { SysApproval } from '../entities/system-approval.entity';
+import { FRONT_END_ROUTE_CONSTANTS } from '../../../common/constants';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApprovalLevelService extends BaseService<ApprovalLevel> {
@@ -55,6 +56,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     private readonly approvalActionRepository: Repository<ApprovalAction>,
 
     private readonly notificationService: NotificationService,
+    private readonly configService: ConfigService
   ) {
     super(approvalLevelRepository);
   }
@@ -79,16 +81,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       },
       { userApproval: userApprovalId },
     );
-
-    // return {
-    //   ...response,
-    //   data: response.data.map((level) => ({
-    //     ...level,
-    //     userApprovalName: level.userApproval?.name ?? null,
-    //     roleName: level.role?.name ?? null,
-    //     userEmail: level.user?.email ?? null,
-    //   })),
-    // };
 
     return {
       ...response,
@@ -333,11 +325,16 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
   ): Promise<void> {
     this.logger.log(`Approval level passed level=${JSON.stringify(level)}`);
 
+    const host = this.configService.get<string>('FRONT_END_URL');
+
+    const redirectUrl = `${host}/${FRONT_END_ROUTE_CONSTANTS.CREATE_APPROVAL_LEVEL_REDIRECT_URl}/${level.userApproval?.id}`;
+
     const context = {
       levelName: level.name,
       description: level.description,
       status: level.status,
       year: new Date().getFullYear(),
+      manageLevelLink: redirectUrl
     };
 
     let recipients: string[] = [];
@@ -360,7 +357,7 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
       template: 'create-level',
       subject: 'New Level Created',
       description: `New Level created name ${level.name} for Approval ${level.userApproval?.name}`,
-      redirectUrl: ''
+      redirectUrl: redirectUrl
     };
 
     await this.notificationService.sendNotification(dto);
