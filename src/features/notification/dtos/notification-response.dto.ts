@@ -1,6 +1,7 @@
 // notifications/dto/notification-response.dto.ts
 import { Expose } from 'class-transformer';
 import { Notification } from '../entities/notification.entity';
+import { format } from 'date-fns';
 
 export class NotificationResponseDto {
   @Expose()
@@ -40,6 +41,9 @@ export class NotificationResponseDto {
   createdAt: string;
 
   @Expose()
+  formattedCreatedAt: string;
+
+  @Expose()
   updatedAt: string;
 
   @Expose()
@@ -59,12 +63,15 @@ export class NotificationResponseDto {
     dto.expiresAt = notification.expiresAt;
     dto.redirectUrl = notification.redirectUrl;
     dto.group = notification.group;
-    dto.createdAt = notification.createdAt.toISOString();
     dto.updatedAt = notification.updatedAt.toISOString();
 
     dto.userId = (notification.user as any)?.id || '';
     dto.userName = notification.user?.name || ''; // assumes `name` exists in User entity
 
+    dto.formattedCreatedAt = format(
+      new Date(notification.createdAt),
+      'dd/MM/yyyy',
+    );
     dto.notifiedPersonnelId = (notification.notifiedPersonnel as any)?.id || '';
     dto.notifiedPersonnelName = notification.notifiedPersonnel?.name || '';
 

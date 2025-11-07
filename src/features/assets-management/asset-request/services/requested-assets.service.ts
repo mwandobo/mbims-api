@@ -53,42 +53,6 @@ export class RequestedAssetsService extends BaseService<AssetRequestItemEntity> 
     };
   }
 
-
-
-
-
-
-  // Get paginated requested assets with optional requestId filter
-  // async findAll(
-  //   pagination: PaginationDto,
-  //   requestId?: string, // optional query filter
-  // ): Promise<PaginatedResponseDto<any>> {
-  //   // Build dynamic where clause
-  //   const where: any = {};
-  //   if (requestId) {
-  //     where.request = { id: requestId };
-  //   }
-  //
-  //   const [items, total] = await this.repo.findAndCount({
-  //     where,
-  //     relations: ['asset', 'asset.category', 'request'],
-  //     skip: (pagination.page - 1) * pagination.limit,
-  //     take: pagination.limit,
-  //     order: { createdAt: 'DESC' },
-  //   });
-  //
-  //   const formatted = items.map((item) => ({
-  //     id: item.id,
-  //     quantity: item.quantity,
-  //     assetName: item.asset?.name,
-  //     categoryName: item.asset?.category?.name,
-  //     requestId: item.request?.id,
-  //     requestName: item.request?.name,
-  //   }));
-  //
-  //   return new PaginatedResponseDto(formatted, total, pagination);
-  // }
-
   async create(
     dto: CreateAssetRequestItemDto,
     requestId: string,
@@ -107,10 +71,6 @@ export class RequestedAssetsService extends BaseService<AssetRequestItemEntity> 
     const requestedItem = this.repo.create({ asset, request });
 
     const savedItem = await this.repo.save(requestedItem);
-
-
-
-
     return AssetRequestItemResponseDto.fromEntity(savedItem);
   }
 
@@ -157,11 +117,6 @@ export class RequestedAssetsService extends BaseService<AssetRequestItemEntity> 
       if (!asset) throw new NotFoundException(`Asset not found`);
       item.asset = asset;
     }
-
-    // // Update other fields like quantity
-    // if (dto.quantity !== undefined) {
-    //   item.quantity = dto.quantity;
-    // }
 
     // Save the changes
     const updatedItem = await this.repo.save(item);
