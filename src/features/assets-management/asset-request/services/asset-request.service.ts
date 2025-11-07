@@ -43,7 +43,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   ): Promise<PaginatedResponseDto<AssetRequestResponseDto>> {
     const response = await this.findAllPaginated(
       pagination,
-      ['user'], // load request items and their assets
+      ['user', 'items.asset'], // load request items and their assets
       { fields: [] },
     );
 
@@ -78,7 +78,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   async findOne(id: string, user?: any): Promise<AssetRequestResponseDto> {
     const request = await this.repo.findOne({
       where: { id },
-      relations: ['user'],
+      relations: ['user', 'items.asset' ],
     });
 
     if (!request) {

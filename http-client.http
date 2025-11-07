@@ -408,7 +408,7 @@ Content-Type: application/json
 }
 
 ###
-GET {{base_url}}/asset-requests/5bd820d1-9af2-43c7-87a9-21c361cab73f
+GET {{base_url}}/asset-requests/1c946c2b-dc58-45e1-ba5a-e295ced164bd
 Authorization: Bearer {{token}}
 
 ###

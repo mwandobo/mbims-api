@@ -326,7 +326,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     this.logger.log(`Approval level passed level=${JSON.stringify(level)}`);
 
     const host = this.configService.get<string>('FRONT_END_URL');
-
     const redirectUrl = `${host}/${FRONT_END_ROUTE_CONSTANTS.CREATE_APPROVAL_LEVEL_REDIRECT_URl}/${level.userApproval?.id}`;
 
     const context = {

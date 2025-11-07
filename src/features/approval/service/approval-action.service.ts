@@ -22,6 +22,8 @@ import { ApprovalLevelService } from './approval-level.service';
 import { NotificationChannelsEnum } from '../../notification/enums/notification-channels.enum';
 import { NotificationService } from '../../notification/notification.service';
 import { SendNotificationDto } from '../../notification/dtos/send-notification.dto';
+import { FRONT_END_ROUTE_CONSTANTS } from '../../../common/constants';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ApprovalActionService extends BaseService<ApprovalAction> {
@@ -37,15 +39,11 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     private readonly userRepository: Repository<User>,
 
     private readonly notificationService: NotificationService,
+    private readonly configService: ConfigService
   ) {
     super(approvalActionRepository);
   }
 
-  /**
-   * Get all approval actions with optional search
-   */
-
-  // Find all requests with pagination
   async findAll(
     pagination: PaginationDto,
     approvalLevel?: string,
@@ -127,9 +125,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     return createdAction;
   }
 
-  /**
-   * Update an existing approval action
-   */
   async update(
     id: string,
     dto: UpdateApprovalActionDto,
@@ -182,6 +177,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     entityCreator: User,
     user: User,
   ): Promise<void> {
+
     // 🟥 CASE: Request Rejected
     if (dto.action === ApprovalActionEnum.REJECTED) {
       // 1️⃣ Find all previous levels for this approval
@@ -209,10 +205,12 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
         ...previousApprovers.map((u) => u.email),
       ].filter(Boolean);
 
+
       // 4️⃣ Prepare the email context
       const context = {
         userName: entityCreator?.name || 'User',
-        requestId: dto?.entityId || 'N/A',
+        requestName: dto?.entityName || "Unknown",
+        assets: dto?.extraData1 || [],
         requestDescription: dto?.description || 'No description provided',
         rejectedBy: user?.name || 'System',
         rejectionDate: new Date().toLocaleDateString('en-US', {
@@ -222,19 +220,12 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
         }),
         priority: 'Normal',
         priorityColor: 'red',
-        approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
+        approvalLink: dto.redirectUrl,
         year: new Date().getFullYear(),
       };
 
       // 5️⃣ Send notifications
       try {
-        // await this.notificationService.sendNotification({
-        //   channel: NotificationChannelsEnum.EMAIL,
-        //   recipients,
-        //   context,
-        //   template: 'approval-rejected',
-        //   subject: `Request Rejected: ${dto.entityName}`,
-        // });
 
         const notificationDto: SendNotificationDto = {
           channel: NotificationChannelsEnum.EMAIL,
@@ -242,8 +233,8 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
           forName: approvalLevel.userApproval?.sysApproval?.entityName,
           forId: approvalLevel.id,
           context: context,
-          template: 'approval-rejected',
-          subject: `Request Rejected: ${dto.entityName}`,
+          template: 'create-level',
+          subject: 'New Level Created',
           description: `Approval For Entity ${dto.entityName} has been Rejected`,
           redirectUrl: dto.redirectUrl
         };
@@ -281,6 +272,8 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       const context = {
         userName: entityCreator?.name || 'User',
         requestId: dto?.entityId || 'N/A',
+        requestName: dto?.entityName || "Unknown",
+        assets: dto?.extraData1 || [],
         requestDescription: dto?.description || 'No description provided',
         finalLevelName: approvalLevel?.name || 'Final Approval',
         approvedBy: user?.name || 'System',
@@ -291,18 +284,11 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
         }),
         priority: 'Normal',
         priorityColor: 'blue',
-        approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
+        approvalLink: dto.redirectUrl,
         year: new Date().getFullYear(),
       };
 
       try {
-        // await this.notificationService.sendNotification({
-        //   channel: NotificationChannelsEnum.EMAIL,
-        //   recipients: entityCreator.email,
-        //   context,
-        //   template: 'request-approved',
-        //   subject: `Approval Complete For Entity: ${dto.entityName}`,
-        // });
 
         const notificationDto: SendNotificationDto = {
           channel: NotificationChannelsEnum.EMAIL,
@@ -340,6 +326,8 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     const context = {
       userName: user?.name || 'Approver',
       requestId: dto?.entityId || 'N/A',
+      requestName: dto?.entityName || "Unknown",
+      assets: dto?.extraData1 || [],
       requestDescription: dto?.description || 'No description provided',
       currentLevelName: approvalLevel?.name || 'Current Level',
       nextLevelName: nextLevel?.name || 'Final Level',
@@ -353,7 +341,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       priorityColor: 'blue',
       dueDate: 'Not specified',
       year: new Date().getFullYear(),
-      approvalLink: `https://your-system.com/approvals/${dto?.entityId || ''}`,
+      approvalLink: dto.redirectUrl,
     };
 
     let recipients: string[] = [];
@@ -377,15 +365,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     }
 
     try {
-      // await this.notificationService.sendNotification({
-      //   channel: NotificationChannelsEnum.EMAIL,
-      //   recipients,
-      //   context,
-      //   template: 'next-approval',
-      //   subject: `Approval Required: ${dto.entityName}`,
-      // });
-
-
       const notificationDto: SendNotificationDto = {
         channel: NotificationChannelsEnum.EMAIL,
         recipients,

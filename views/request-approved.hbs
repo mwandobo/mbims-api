@@ -12,8 +12,16 @@
 
   <table cellpadding="8" cellspacing="0" width="100%" style="border-collapse: collapse; background: #f8f9fa; border: 1px solid #dee2e6; margin-top: 10px;">
     <tr>
-      <td width="30%" style="border: 1px solid #dee2e6;"><strong>Request ID</strong></td>
-      <td style="border: 1px solid #dee2e6;">{{requestId}}</td>
+      <td width="30%" style="border: 1px solid #dee2e6;"><strong>Requested Assets</strong></td>
+      <td style="border: 1px solid #dee2e6;">
+        {{#if assets}}
+          {{#each assets}}
+            {{this.asset.name}}{{#unless @last}}, {{/unless}}
+          {{/each}}
+        {{else}}
+          N/A
+        {{/if}}
+      </td>
     </tr>
     <tr>
       <td style="border: 1px solid #dee2e6;"><strong>Final Approval Level</strong></td>

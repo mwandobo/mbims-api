@@ -9,42 +9,31 @@ import {
 } from 'class-validator';
 
 export class CreateApprovalActionDto {
-  @ApiProperty({ example: 'Finance Approval Action' })
-  @IsNotEmpty()
   @IsString()
   name: string;
 
-  @ApiProperty({ example: 'APPROVE' })
-  @IsNotEmpty()
   @IsString()
   action: string;
 
-  @ApiProperty({ example: 'Invoice' })
-  @IsNotEmpty()
   @IsString()
   entityName: string;
 
-  @ApiProperty({ example: 'entity-creator-id' })
-  @IsNotEmpty()
+  extraData1: any;
+
   @IsString()
   entityCreatorId: string;
 
-  @ApiProperty({ example: 'uuid-of-entity' })
-  @IsNotEmpty()
   @IsUUID()
   entityId: string;
 
-  @ApiProperty({ example: 'redirect-url' })
   @IsOptional()
   @IsUUID()
   redirectUrl: string;
 
-  @ApiProperty({ example: 'Approve invoice for payment' })
   @IsOptional()
   @IsString()
   description?: string;
 
-  @ApiProperty({ example: 'uuid-of-approval-level' })
   @IsNotEmpty()
   @IsUUID()
   approvalLevelId: string;
