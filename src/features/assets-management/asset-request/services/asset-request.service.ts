@@ -78,7 +78,7 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
   async findOne(id: string, user?: any): Promise<AssetRequestResponseDto> {
     const request = await this.repo.findOne({
       where: { id },
-      relations: ['user', 'items.asset' ],
+      relations: ['user', 'items.asset'],
     });
 
     if (!request) {
@@ -117,6 +117,21 @@ export class AssetRequestService extends BaseService<AssetRequestEntity> {
     const updatedAssetRequest = await this.repo.save(assetRequest);
     // request.items = items;
     return AssetRequestResponseDto.fromEntity(updatedAssetRequest);
+  }
+
+  // Update a request (replace items)
+  async submit(id: string, User: any): Promise<string> {
+    const request = await this.repo.findOne({
+      where: { id },
+    });
+
+    if (!request) {
+      throw new NotFoundException(`Asset request with ID ${id} not found`);
+    }
+
+    request.status = 'submitted';
+    await this.repo.save(request);
+    return `request described as ${request.name} submitted Successfully`
   }
 
   // Delete a request

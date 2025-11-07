@@ -17,7 +17,13 @@ export abstract class BaseEntity extends TypeORMBaseEntity {
   updatedAt: Date;
 
   @Column({ default: 'pending' })
-  status: 'pending' | 'active' | 'completed' | 'closed' | 'expired';
+  status:
+    | 'pending'
+    | 'submitted'
+    | 'active'
+    | 'completed'
+    | 'closed'
+    | 'expired';
 
   @Column({ nullable: true })
   reference_no: string;

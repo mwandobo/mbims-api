@@ -52,6 +52,15 @@ export class AssetRequestController {
     return this.service.update(id, updateDto, user);
   }
 
+  @Get(':id/submit')
+  submit(
+    @Param('id') id: string,
+    @Req() req: any
+  ) {
+    const user = req.user; // the authenticated user extracted from the JWT
+    return this.service.submit(id, user);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.service.remove(id);
