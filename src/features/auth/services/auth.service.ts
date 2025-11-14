@@ -46,13 +46,7 @@ export class AuthService {
       const devUser = await this.usersService.findForAuth(username);
 
       if (!devUser) {
-        const userPayload = {
-          name: 'Dev User',
-          username: 'devuser',
-          email: 'admin@gmail.com',
-          password: '123456',
-        };
-        return await this.usersService.create(userPayload);
+        throw new UnauthorizedException('User Does Not Exist');
       }
       return devUser;
     }

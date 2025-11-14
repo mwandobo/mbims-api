@@ -23,8 +23,7 @@ export class PermissionService {
     });
     return permissions.map(PermissionResponseDto.fromPermission);
   }
-
-
+  
   async addPermissionToRole(
     roleId: string,
     createPermissionDto: CreatePermissionDto,

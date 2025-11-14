@@ -54,7 +54,7 @@ GET {{base_url}}users?q=admin
 Authorization: Bearer {{token}}
 
 ###
-GET {{base_url}}roles/b6dd6cfd-e9d3-4e58-bc4e-f6ad01ddf5cc
+GET {{base_url}}permissions
 Authorization: Bearer {{token}}
 
 ###
@@ -127,7 +127,7 @@ DELETE {{base_url}}departments/70c9d969-6fcc-4415-8a90-7ad14a6e829a
 Authorization: Bearer {{token}}
 
 ###
-GET {{base_url}}roles
+GET {{base_url}}permissions
 Authorization: Bearer {{token}}
 
 ###
@@ -470,7 +470,6 @@ Content-Type: application/json
 ###
 GET {{base_url}}/sys-approvals
 Authorization: Bearer {{token}}
-
 
 ###
 GET {{base_url}}/user-approvals
