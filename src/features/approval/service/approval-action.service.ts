@@ -39,7 +39,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     private readonly userRepository: Repository<User>,
 
     private readonly notificationService: NotificationService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {
     super(approvalActionRepository);
   }
@@ -177,7 +177,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     entityCreator: User,
     user: User,
   ): Promise<void> {
-
     // 🟥 CASE: Request Rejected
     if (dto.action === ApprovalActionEnum.REJECTED) {
       // 1️⃣ Find all previous levels for this approval
@@ -205,11 +204,10 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
         ...previousApprovers.map((u) => u.email),
       ].filter(Boolean);
 
-
       // 4️⃣ Prepare the email context
       const context = {
         userName: entityCreator?.name || 'User',
-        requestName: dto?.entityName || "Unknown",
+        requestName: dto?.entityName || 'Unknown',
         assets: dto?.extraData1 || [],
         requestDescription: dto?.description || 'No description provided',
         rejectedBy: user?.name || 'System',
@@ -226,7 +224,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
 
       // 5️⃣ Send notifications
       try {
-
         const notificationDto: SendNotificationDto = {
           channel: NotificationChannelsEnum.EMAIL,
           recipients,
@@ -236,7 +233,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
           template: 'create-level',
           subject: 'New Level Created',
           description: `Approval For Entity ${dto.entityName} has been Rejected`,
-          redirectUrl: dto.redirectUrl
+          redirectUrl: dto.redirectUrl,
         };
 
         await this.notificationService.sendNotification(notificationDto);
@@ -272,7 +269,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       const context = {
         userName: entityCreator?.name || 'User',
         requestId: dto?.entityId || 'N/A',
-        requestName: dto?.entityName || "Unknown",
+        requestName: dto?.entityName || 'Unknown',
         assets: dto?.extraData1 || [],
         requestDescription: dto?.description || 'No description provided',
         finalLevelName: approvalLevel?.name || 'Final Approval',
@@ -289,7 +286,6 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
       };
 
       try {
-
         const notificationDto: SendNotificationDto = {
           channel: NotificationChannelsEnum.EMAIL,
           recipients: entityCreator.email,
@@ -299,7 +295,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
           template: 'request-approved',
           subject: `Approval Complete For Entity: ${dto.entityName}`,
           description: `Approval request for the entity ${dto.entityName} has been completed`,
-          redirectUrl: dto.redirectUrl
+          redirectUrl: dto.redirectUrl,
         };
 
         await this.notificationService.sendNotification(notificationDto);
@@ -326,7 +322,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
     const context = {
       userName: user?.name || 'Approver',
       requestId: dto?.entityId || 'N/A',
-      requestName: dto?.entityName || "Unknown",
+      requestName: dto?.entityName || 'Unknown',
       assets: dto?.extraData1 || [],
       requestDescription: dto?.description || 'No description provided',
       currentLevelName: approvalLevel?.name || 'Current Level',
@@ -374,7 +370,7 @@ export class ApprovalActionService extends BaseService<ApprovalAction> {
         template: 'next-approval',
         subject: `Approval Required: ${dto.entityName}`,
         description: `Approval Required for ${dto.entityName}`,
-        redirectUrl: dto.redirectUrl
+        redirectUrl: dto.redirectUrl,
       };
 
       await this.notificationService.sendNotification(notificationDto);

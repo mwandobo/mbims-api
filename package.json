@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "postbuild": "mkdir -p dist/mailer/templates && cp src/common/mailer/templates/*.hbs dist/mailer/templates/",
+    "postbuild": "mkdir -p dist/mailer/templates || true && copyfiles src/common/mailer/templates/*.hbs dist/mailer/templates",
     "start": "nest start",
     "start:debug": "npm run postbuild && nest start --debug --watch",
     "start:dev": "nest start --watch",
