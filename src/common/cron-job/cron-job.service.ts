@@ -121,7 +121,7 @@ export class CronJobService {
       //   },
       // });
 
-      const baseUrl = process.env.FRONTEND_URL ?? 'http://legal.spp.co.tz';
+      const baseUrl = process.env.FRONTEND_URL ?? 'http://127.0;.0.1:3000';
 
       const notificationPayload: CreateNotificationDto = {
         title: 'Contract Expiration',

@@ -47,8 +47,8 @@ export class EmailService {
       if (!options.to) throw new Error('Recipient "to" field is empty');
 
       // Show config info (optional)
-      const transportHost = this.configService.get('MAIL_HOST');
-      const fromAddress = this.configService.get('MAIL_FROM');
+      const transportHost = this.configService.get('EMAIL_HOST');
+      const fromAddress = this.configService.get('EMAIL_FROM');
       this.logger.verbose(
         `[sendEmailNow] Using transport host: ${transportHost}`,
       );

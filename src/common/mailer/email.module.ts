@@ -15,31 +15,6 @@ import { EmailProcessor } from './email.processor';
     }),
     MailerModule.forRootAsync({
 
-
-
-      // useFactory: async (config: ConfigService) => ({
-      //   transport: {
-      //     host: config.get('EMAIL_HOST'),
-      //     port: config.get('EMAIL_PORT'),
-      //     secure: config.get('EMAIL_SECURE'), // true for 465, false for other ports
-      //     auth: {
-      //       user: config.get('EMAIL_USER'),
-      //       pass: config.get('EMAIL_PASSWORD'),
-      //     },
-      //   },
-      //   defaults: {
-      //     from: `"${config.get('EMAIL_FROM_NAME')}" <${config.get('EMAIL_FROM_ADDRESS')}>`,
-      //   },
-      //   template: {
-      //     dir: join(process.cwd(), 'views'), // Path to your templates
-      //     adapter: new HandlebarsAdapter(), // Using handlebars
-      //     options: {
-      //       strict: true,
-      //     },
-      //   },
-      // }),
-
-
       useFactory: async (config: ConfigService) => ({
         transport: {
           host: config.get<string>('EMAIL_HOST'),
