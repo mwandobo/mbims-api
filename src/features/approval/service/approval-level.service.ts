@@ -99,13 +99,12 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     this.logger.log(
       `Creating approval level for user ${user.userId} with name: ${dto.name}`,
     );
+    this.logger.log(`Validating userApproval with id: ${userApprovalId}`);
 
     const role = await this.validateRole(dto.roleId);
+    const userApproval = await this.validateUserApproval(dto.userApprovalId);
     const existingApprovalLevel = await this.approvalLevelRepository.findOne({
-      where: {
-        role: { id: dto.roleId },
-        userApproval: { id: userApprovalId },
-      },
+      where: { role:{id: dto.roleId},  userApproval: {id: dto.userApprovalId}, },
     });
 
     if (existingApprovalLevel) {
@@ -124,8 +123,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     });
 
     // ✅ Validate relations
-    this.logger.log(`Validating userApproval with id: ${userApprovalId}`);
-    const userApproval = await this.validateUserApproval(userApprovalId);
     approvalLevel.userApproval = userApproval;
 
     // ✅ Save the new approval level first
@@ -252,16 +249,6 @@ export class ApprovalLevelService extends BaseService<ApprovalLevel> {
     return this.approvalLevelRepository.save(level);
   }
 
-  /**
-   * Delete (soft or hard)
-   */
-  // async deleteApprovalLevel(id: string, soft = true): Promise<void> {
-  //   const level = await this.approvalLevelRepository.findOne({ where: { id } });
-  //   if (!level) {
-  //     throw new NotFoundException(`ApprovalLevel with ID ${id} not found`);
-  //   }
-  //   await this.approvalLevelRepository.remove(level);
-  // }
 
   async deleteApprovalLevel(id: string, soft = true): Promise<void> {
     const level = await this.approvalLevelRepository.findOne({
