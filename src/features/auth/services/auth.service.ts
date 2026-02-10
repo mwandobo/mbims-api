@@ -1,5 +1,5 @@
 // auth/auth.service.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../../users/services/users.service';
@@ -11,6 +11,7 @@ import { NotificationService } from '../../notification/notification.service';
 
 @Injectable()
 export class AuthService {
+  readonly logger = new Logger()
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
@@ -35,6 +36,10 @@ export class AuthService {
 
   async validateUser(username: string, password: string): Promise<any> {
     const useLdap = this.configService.get('USE_LDAP_AUTH') === 'true';
+
+    this.logger.log(useLdap)
+
+
 
     if (useLdap) {
       try {
